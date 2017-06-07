@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.WorkFlow_approvalLevelMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.WorkFlow_approvalLevel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="level" property="level" jdbcType="INTEGER" />
+    <result column="permissionGroup" property="permissiongroup" jdbcType="INTEGER" />
+    <result column="approvalUser" property="approvaluser" jdbcType="VARCHAR" />
+    <result column="conditions" property="conditions" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+    <result column="lastProcessingTime" property="lastprocessingtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, level, permissionGroup, approvalUser, conditions, money, status, lastPersonID, 
+    lastProcessingTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from workflow_approvallevel
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from workflow_approvallevel
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.WorkFlow_approvalLevel" >
+    insert into workflow_approvallevel (id, level, permissionGroup, 
+      approvalUser, conditions, money, 
+      status, lastPersonID, lastProcessingTime
+      )
+    values (#{id,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, #{permissiongroup,jdbcType=INTEGER}, 
+      #{approvaluser,jdbcType=VARCHAR}, #{conditions,jdbcType=VARCHAR}, #{money,jdbcType=DECIMAL}, 
+      #{status,jdbcType=VARCHAR}, #{lastpersonid,jdbcType=INTEGER}, #{lastprocessingtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.WorkFlow_approvalLevel" >
+    insert into workflow_approvallevel
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="level != null" >
+        level,
+      </if>
+      <if test="permissiongroup != null" >
+        permissionGroup,
+      </if>
+      <if test="approvaluser != null" >
+        approvalUser,
+      </if>
+      <if test="conditions != null" >
+        conditions,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID,
+      </if>
+      <if test="lastprocessingtime != null" >
+        lastProcessingTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="level != null" >
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="permissiongroup != null" >
+        #{permissiongroup,jdbcType=INTEGER},
+      </if>
+      <if test="approvaluser != null" >
+        #{approvaluser,jdbcType=VARCHAR},
+      </if>
+      <if test="conditions != null" >
+        #{conditions,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastpersonid != null" >
+        #{lastpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastprocessingtime != null" >
+        #{lastprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.WorkFlow_approvalLevel" >
+    update workflow_approvallevel
+    <set >
+      <if test="level != null" >
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="permissiongroup != null" >
+        permissionGroup = #{permissiongroup,jdbcType=INTEGER},
+      </if>
+      <if test="approvaluser != null" >
+        approvalUser = #{approvaluser,jdbcType=VARCHAR},
+      </if>
+      <if test="conditions != null" >
+        conditions = #{conditions,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastprocessingtime != null" >
+        lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.WorkFlow_approvalLevel" >
+    update workflow_approvallevel
+    set level = #{level,jdbcType=INTEGER},
+      permissionGroup = #{permissiongroup,jdbcType=INTEGER},
+      approvalUser = #{approvaluser,jdbcType=VARCHAR},
+      conditions = #{conditions,jdbcType=VARCHAR},
+      money = #{money,jdbcType=DECIMAL},
+      status = #{status,jdbcType=VARCHAR},
+      lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+      lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

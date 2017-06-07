@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ShopBusinessScope_itemInformationMapper">
+	<resultMap id="BaseResultMap"
+		type="com.kang.pojo.ShopBusinessScope_itemInformation">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="shopBusinessScopeID" property="shopbusinessscopeid"
+			jdbcType="INTEGER" />
+		<result column="itemInformationID" property="iteminformationid"
+			jdbcType="INTEGER" />
+		<result column="inventoryLocationID" property="inventoryLocationid"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="s_iteminfoMap"
+		type="com.kang.pojo.ShopBusinessScope_itemInfo">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="shopBusinessScopeID" property="shopbusinessscopeid"
+			jdbcType="INTEGER" />
+		<result column="itemInformationID" property="iteminformationid"
+			jdbcType="INTEGER" />
+		<result column="inventoryLocationID" property="inventoryLocationid"
+			jdbcType="INTEGER" />
+		<result column="itemCode" property="itemcode" jdbcType="VARCHAR" />
+		<result column="articleBarCode" property="articlebarcode"
+			jdbcType="VARCHAR" />
+		<result column="chineseName" property="chinesename" jdbcType="VARCHAR" />
+		<result column="maxStock" property="maxstock" jdbcType="INTEGER" />
+		<result column="minStock" property="minstock" jdbcType="INTEGER" />
+		<result column="latestPrice" property="latestprice" jdbcType="DECIMAL" />
+		<result column="proposalPrice" property="proposalprice"
+			jdbcType="DECIMAL" />
+	</resultMap>
+	<select id="s_iteminfo" resultMap="s_iteminfoMap" parameterType="java.lang.Integer">
+		SELECT s.id ,s.shopBusinessScopeID ,s.itemInformationID ,s.inventoryLocationID , i.itemcode , i.articleBarCode , i.chineseName ,
+		i.maxStock , i.minStock , i.latestprice , i.proposalprice from
+		shopbusinessscope_iteminformation s , inteminformation i WHERE
+		s.itemInformationID = i.intemInformationID and s.shopBusinessScopeID =
+		#{supplyagreementid,jdbcType=INTEGER}
+	</select>
+	<sql id="Base_Column_List">
+		id, shopBusinessScopeID, itemInformationID,inventoryLocationID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from shopbusinessscope_iteminformation
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 库存查询-普通查询 -->
+	<select id="selectkucunone" resultMap="BaseResultMap">
+		select 
+		<include refid="Base_Column_List" />
+		from shopbusinessscope_iteminformation
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from shopbusinessscope_iteminformation
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.ShopBusinessScope_itemInformation">
+		insert into shopbusinessscope_iteminformation (id,
+		shopBusinessScopeID, itemInformationID,inventoryLocationID
+		)
+		values (#{id,jdbcType=INTEGER}, #{shopbusinessscopeid,jdbcType=INTEGER},
+		#{iteminformationid,jdbcType=INTEGER},#{inventoryLocationid,jdbcType=INTEGER}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.ShopBusinessScope_itemInformation">
+		insert into shopbusinessscope_iteminformation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="shopbusinessscopeid != null">
+				shopBusinessScopeID,
+			</if>
+			<if test="iteminformationid != null">
+				itemInformationID,
+			</if>
+			<if test="inventoryLocationid != null">
+				inventoryLocationID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="shopbusinessscopeid != null">
+				#{shopbusinessscopeid,jdbcType=INTEGER},
+			</if>
+			<if test="iteminformationid != null">
+				#{iteminformationid,jdbcType=INTEGER},
+			</if>
+			<if test="inventoryLocationid != null">
+				#{inventoryLocationid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.ShopBusinessScope_itemInformation">
+		update shopbusinessscope_iteminformation
+		<set>
+			<if test="shopbusinessscopeid != null">
+				shopBusinessScopeID = #{shopbusinessscopeid,jdbcType=INTEGER},
+			</if>
+			<if test="iteminformationid != null">
+				itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+			</if>
+			<if test="inventoryLocationid != null">
+				inventoryLocationID = #{inventoryLocationid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.ShopBusinessScope_itemInformation">
+		update shopbusinessscope_iteminformation
+		set shopBusinessScopeID = #{shopbusinessscopeid,jdbcType=INTEGER},
+		itemInformationID =#{iteminformationid,jdbcType=INTEGER},
+		inventoryLocationID =#{inventoryLocationid,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.OperationLogMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.OperationLog" >
+    <id column="operationLogID" property="operationlogid" jdbcType="INTEGER" />
+    <result column="operatorID" property="operatorid" jdbcType="INTEGER" />
+    <result column="ipAddress" property="ipaddress" jdbcType="VARCHAR" />
+    <result column="operationTime" property="operationtime" jdbcType="TIMESTAMP" />
+    <result column="operationType" property="operationtype" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.kang.pojo.OperationLog" extends="BaseResultMap" >
+    <result column="operationContent" property="operationcontent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    operationLogID, operatorID, ipAddress, operationTime, operationType
+  </sql>
+  <sql id="Blob_Column_List" >
+    operationContent
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from operationlog
+    where operationLogID = #{operationlogid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from operationlog
+    where operationLogID = #{operationlogid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.OperationLog" >
+    insert into operationlog (operationLogID, operatorID, ipAddress, 
+      operationTime, operationType, operationContent
+      )
+    values (#{operationlogid,jdbcType=INTEGER}, #{operatorid,jdbcType=INTEGER}, #{ipaddress,jdbcType=VARCHAR}, 
+      #{operationtime,jdbcType=TIMESTAMP}, #{operationtype,jdbcType=VARCHAR}, #{operationcontent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.OperationLog" >
+    insert into operationlog
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="operationlogid != null" >
+        operationLogID,
+      </if>
+      <if test="operatorid != null" >
+        operatorID,
+      </if>
+      <if test="ipaddress != null" >
+        ipAddress,
+      </if>
+      <if test="operationtime != null" >
+        operationTime,
+      </if>
+      <if test="operationtype != null" >
+        operationType,
+      </if>
+      <if test="operationcontent != null" >
+        operationContent,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="operationlogid != null" >
+        #{operationlogid,jdbcType=INTEGER},
+      </if>
+      <if test="operatorid != null" >
+        #{operatorid,jdbcType=INTEGER},
+      </if>
+      <if test="ipaddress != null" >
+        #{ipaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="operationtime != null" >
+        #{operationtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationtype != null" >
+        #{operationtype,jdbcType=VARCHAR},
+      </if>
+      <if test="operationcontent != null" >
+        #{operationcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.OperationLog" >
+    update operationlog
+    <set >
+      <if test="operatorid != null" >
+        operatorID = #{operatorid,jdbcType=INTEGER},
+      </if>
+      <if test="ipaddress != null" >
+        ipAddress = #{ipaddress,jdbcType=VARCHAR},
+      </if>
+      <if test="operationtime != null" >
+        operationTime = #{operationtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operationtype != null" >
+        operationType = #{operationtype,jdbcType=VARCHAR},
+      </if>
+      <if test="operationcontent != null" >
+        operationContent = #{operationcontent,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where operationLogID = #{operationlogid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.kang.pojo.OperationLog" >
+    update operationlog
+    set operatorID = #{operatorid,jdbcType=INTEGER},
+      ipAddress = #{ipaddress,jdbcType=VARCHAR},
+      operationTime = #{operationtime,jdbcType=TIMESTAMP},
+      operationType = #{operationtype,jdbcType=VARCHAR},
+      operationContent = #{operationcontent,jdbcType=LONGVARCHAR}
+    where operationLogID = #{operationlogid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.OperationLog" >
+    update operationlog
+    set operatorID = #{operatorid,jdbcType=INTEGER},
+      ipAddress = #{ipaddress,jdbcType=VARCHAR},
+      operationTime = #{operationtime,jdbcType=TIMESTAMP},
+      operationType = #{operationtype,jdbcType=VARCHAR}
+    where operationLogID = #{operationlogid,jdbcType=INTEGER}
+  </update>
+</mapper>

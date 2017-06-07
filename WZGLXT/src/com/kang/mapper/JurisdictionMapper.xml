@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.JurisdictionMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.Jurisdiction">
+		<id column="jurisdictionID" property="jurisdictionid" jdbcType="INTEGER" />
+		<result column="jurisdictionName" property="jurisdictionname"
+			jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		jurisdictionID, jurisdictionName, status, createDate
+	</sql>
+
+	<select id="selstcJurisdiction" parameterType="map" resultMap="BaseResultMap">
+		select * from jurisdiction where 1=1
+		<if test="rootname!=null and rootname!='' ">
+			and jurisdictionName like '%${rootname}%'
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY createDate desc limit
+			#{mincount},#{maxcount}
+		</if>
+	</select>
+
+	<select id="selstcJurisdictioncount" parameterType="map"
+		resultType="java.lang.Integer">
+		select count(*) from jurisdiction where 1=1
+		<if test="rootname!=null and rootname!='' ">
+			and jurisdictionName like '%${rootname}%'
+		</if>
+	</select>
+	
+	<select id="selectRole_jurisdiction" resultType="com.kang.pojo.Role_jurisdiction"
+		parameterType="java.lang.Integer">
+		select jurisdictionid from role_jurisdiction  where roleid=#{roleid}
+	</select>
+	
+	<select id="selectRole_jurisdictionMap" resultType="com.kang.pojo.Role_jurisdiction"
+		parameterType="java.lang.Integer">
+		select rj.jurisdictionid 
+		from 
+		role_jurisdiction rj, 
+		role r,
+		user u,
+		user_role ur
+		where 1=1
+		and 
+		rj.roleid=r.roleid
+		and
+		u.userid=ur.userid
+		and 
+		r.roleid=ur.roleid
+		and 
+		u.userid=#{userid}
+		
+	</select>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from jurisdiction
+		where jurisdictionID = #{jurisdictionid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from jurisdiction
+		where jurisdictionID = #{jurisdictionid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.Jurisdiction">
+		insert into jurisdiction (jurisdictionID, jurisdictionName,
+		status, createDate)
+		values (#{jurisdictionid,jdbcType=INTEGER},
+		#{jurisdictionname,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR}, #{createdate,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.Jurisdiction">
+		insert into jurisdiction
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="jurisdictionid != null">
+				jurisdictionID,
+			</if>
+			<if test="jurisdictionname != null">
+				jurisdictionName,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="jurisdictionid != null">
+				#{jurisdictionid,jdbcType=INTEGER},
+			</if>
+			<if test="jurisdictionname != null">
+				#{jurisdictionname,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Jurisdiction">
+		update jurisdiction
+		<set>
+			<if test="jurisdictionname != null">
+				jurisdictionName = #{jurisdictionname,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where jurisdictionID = #{jurisdictionid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.Jurisdiction">
+		update jurisdiction
+		set jurisdictionName = #{jurisdictionname,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		createDate = #{createdate,jdbcType=TIMESTAMP}
+		where jurisdictionID = #{jurisdictionid,jdbcType=INTEGER}
+	</update>
+</mapper>

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.PurchaseRequisitionMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.PurchaseRequisition" >
+    <id column="purchaseRequisitionID" property="purchaserequisitionid" jdbcType="INTEGER" />
+    <result column="applicationNo" property="applicationno" jdbcType="VARCHAR" />
+    <result column="applicantID" property="applicantid" jdbcType="INTEGER" />
+    <result column="companyID" property="companyid" jdbcType="INTEGER" />
+    <result column="deptID" property="deptid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="explains" property="explains" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="placeOfDelivery" property="placeofdelivery" jdbcType="VARCHAR" />
+    <result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+    <result column="lastProcessingTime" property="lastprocessingtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    purchaseRequisitionID, applicationNo, applicantID, companyID, deptID, status, explains, 
+    remarks, placeOfDelivery, createDate, lastPersonID, lastProcessingTime
+  </sql>
+  <sql id="purList">
+  	purchaseRequisitionID,applicationNo,applicantID,deptID,status,explains,createDate,lastPersonID,lastProcessingTime
+  </sql>
+  <select id="selectPurchaserequisitionId" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select <include refid="purList"/> from purchaserequisition where applicationNo=#{applicationNo}
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from purchaserequisition
+    where purchaseRequisitionID = #{purchaserequisitionid,jdbcType=INTEGER}
+  </select>
+  <!-- 模糊查询 -->
+  <select id="selectPur" parameterType="map" resultType="com.kang.pojo.Purrequisition">
+  	SELECT 
+	p.purchaseRequisitionID,p.applicationNo,p.explains,i.materialMaterial,
+	i.itemCode,i.chineseName,i.articleBarCode,i.purchaseSpecifications,
+	i.purchasingUnit,i.currentStock,
+	p.status,p.lastProcessingTime,p.createDate,
+	p.remarks,pf.number,pf.iteminformationid,	
+	(SELECT loginname FROM user where userID=p.applicantID) AS commitName,
+	(SELECT o.organizationName FROM organization o WHERE o.organizationID=p.deptID) AS organizationName,
+	(SELECT loginname FROM user WHERE userID=p.lastPersonID) AS lastName,
+	(SELECT w.warehouseName FROM warehousemanagement w
+			WHERE w.warehouseManagementID=p.warehouseManagementID) AS warehouseName
+	FROM purchaserequisition p,inteminformation i,purchaserequisition_iteminformation pf
+		WHERE p.purchaseRequisitionID=pf.purchaseRequisitionID
+		AND pf.itemInformationID=i.intemInformationID
+		<if test="purchaserequisitionid!=null and purchaserequisitionid!='' "> 
+			AND p.purchaseRequisitionID=#{purchaserequisitionid}
+		</if>
+  </select>
+  <select id="selectPurreq" parameterType="map" resultType="com.kang.pojo.Purrequisition">
+  		SELECT
+  			f.purchaseRequisitionID,
+			f.applicationNo,
+			f.explains,
+			f.materialMaterial,
+			count(*) AS pNumber,
+			f.status,
+			f.lastProcessingTime,
+			f.commitName,
+			f.organizationName
+		FROM(
+			SELECT
+				p.purchaseRequisitionID,
+				p.applicationNo,
+				p.explains,
+				i.materialMaterial,
+				p.status,
+				p.lastProcessingTime,
+				(SELECT
+					loginname
+					FROM
+						user
+					WHERE
+						userID = p.lastPersonID) AS commitName,
+				(SELECT
+						o.organizationName
+					FROM
+						organization o
+					WHERE
+						o.organizationID = p.deptID) AS organizationName
+			FROM
+				inteminformation i,
+				purchaserequisition p,
+				purchaserequisition_iteminformation ps
+			WHERE
+				1 = 1
+				AND p.purchaseRequisitionID = ps.purchaseRequisitionID
+				AND ps.itemInformationID = i.intemInformationID) f 
+		WHERE 1=1
+		<if test="applicationNo !=null and applicationNo !='' ">
+  	 		AND f.applicationNo like '%${applicationNo}%'
+  	 	</if>
+  	 	<if test="explians !=null and explians !='' ">
+  	 		AND f.explains like '%${explians}%'
+  	 	</if>
+  	 	<if test="createdate !=null and createdate !='' ">
+  	 		AND f.lastProcessingTime &gt; #{createdate}
+  	 	</if>
+  	 	<if test="lastDate !=null and lastDate !='' ">
+  	 		AND f.lastProcessingTime &lt; #{lastDate}
+  	 	</if>
+  	 	<if test="status !=null and status !='' ">
+  	 		AND f.status =#{status}
+  	 	</if>
+  	 	<if test="materialMaterial !=null and materialMaterial !='' ">
+  	 		AND f.materialMaterial =#{materialMaterial}
+  	 	</if>
+  	 	<if test="commitName !=null and commitName !='' ">
+  	 		AND f.commitName=#{commitName}
+  	 	</if>
+  	 	<if test="organizationName !=null and organizationName !='' ">
+  	 		AND f.organizationName=#{organizationName}
+  	 	</if>
+  	 	GROUP BY f.applicationNo	
+  	 	<if test="mincount>=0">
+			 limit #{mincount},#{maxcount}
+		</if>
+  </select>
+  <!-- 采购申请表数据查询分页 -->
+	<select id="selPurchaseRequisition" parameterType="map" resultMap="BaseResultMap">
+		select * from purchaseRequisition ORDER BY createdate
+		desc 
+		<if test="mincount>=0">
+		limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<!-- 查询采购申请数据总条数 -->
+	<select id="selectCountRequisition" resultType="java.lang.Integer">
+		select count(*) from (SELECT
+  		f.purchaseRequisitionID,
+			f.applicationNo,
+			f.explains,
+			f.materialMaterial,
+			count(*) AS pNumber,
+			f.status,
+			f.lastProcessingTime,
+			f.commitName,
+			f.organizationName
+		FROM(
+			SELECT
+				p.purchaseRequisitionID,
+				p.applicationNo,
+				p.explains,
+				i.materialMaterial,
+				p.status,
+				p.lastProcessingTime,
+				(SELECT
+					loginname
+					FROM
+						user
+					WHERE
+						userID = p.lastPersonID) AS commitName,
+				(SELECT
+						o.organizationName
+					FROM
+						organization o
+					WHERE
+						o.organizationID = p.deptID) AS organizationName
+			FROM
+				inteminformation i,
+				purchaserequisition p,
+				purchaserequisition_iteminformation ps
+			WHERE
+				1 = 1
+				AND p.purchaseRequisitionID = ps.purchaseRequisitionID
+				AND ps.itemInformationID = i.intemInformationID) f
+				GROUP BY f.applicationNo)f1
+	</select>
+	<select id="selectCount" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from (SELECT
+  		f.purchaseRequisitionID,
+			f.applicationNo,
+			f.explains,
+			f.materialMaterial,
+			count(*) AS pNumber,
+			f.status,
+			f.lastProcessingTime,
+			f.commitName,
+			f.organizationName
+		FROM(
+			SELECT
+				p.purchaseRequisitionID,
+				p.applicationNo,
+				p.explains,
+				i.materialMaterial,
+				p.status,
+				p.lastProcessingTime,
+				(SELECT
+					loginname
+					FROM
+						user
+					WHERE
+						userID = p.lastPersonID) AS commitName,
+				(SELECT
+						o.organizationName
+					FROM
+						organization o
+					WHERE
+						o.organizationID = p.deptID) AS organizationName
+			FROM
+				inteminformation i,
+				purchaserequisition p,
+				purchaserequisition_iteminformation ps
+			WHERE
+				1 = 1
+				AND p.purchaseRequisitionID = ps.purchaseRequisitionID
+				AND ps.itemInformationID = i.intemInformationID) f
+		WHERE 1=1
+		<if test="applicationNo !=null and applicationNo !='' ">
+  	 		AND f.applicationNo like '%${applicationNo}%'
+  	 	</if>
+  	 	<if test="explians !=null and explians !='' ">
+  	 		AND f.explains like '%${explians}%'
+  	 	</if>
+  	 	<if test="createdate !=null and createdate !='' ">
+  	 		AND f.lastProcessingTime &gt; #{createdate}
+  	 	</if>
+  	 	<if test="lastDate !=null and lastDate !='' ">
+  	 		AND f.lastProcessingTime &lt; #{lastDate}
+  	 	</if>
+  	 	<if test="status !=null and status !='' ">
+  	 		AND f.status =#{status}
+  	 	</if>
+  	 	<if test="materialMaterial !=null and materialMaterial !='' ">
+  	 		AND f.materialMaterial =#{materialMaterial}
+  	 	</if>
+  	 	<if test="commitName !=null and commitName !='' ">
+  	 		AND f.commitName=#{commitName}
+  	 	</if>
+  	 	<if test="organizationName !=null and organizationName !='' ">
+  	 		AND f.organizationName=#{organizationName}
+  	 	</if>	
+		GROUP BY f.applicationNo)f1
+		 
+  	 </select>
+  	<!-- 待我操作申请的条数 -->
+	<select id="waitMePlay" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from purchaserequisition where applicantid=#{id} and `status`='未提交'
+	</select>
+	<select id="played" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from purchaserequisition where applicantid=#{id} and `status`='已提交'
+	</select>
+	<select id="MyDJ" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from purchaserequisition where applicantid=#{id}
+	</select>
+	<select id="notgMyDJ" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from purchaserequisition where applicantid=#{id} and `status`='审核失败'
+	</select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from purchaserequisition
+    where purchaseRequisitionID = #{purchaserequisitionid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.Purrequisition" >
+    insert into purchaserequisition (purchaseRequisitionID, applicationNo, 
+      applicantID, companyID, deptID, 
+      status, explains, remarks, 
+      placeOfDelivery, createDate, lastPersonID, 
+      lastProcessingTime)
+    values (#{purchaserequisitionid,jdbcType=INTEGER}, #{applicationno,jdbcType=VARCHAR}, 
+      #{applicantid,jdbcType=INTEGER}, #{companyid,jdbcType=INTEGER}, #{deptid,jdbcType=INTEGER}, 
+      #{status,jdbcType=VARCHAR}, #{explains,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, 
+      #{placeofdelivery,jdbcType=VARCHAR}, #{createdate,jdbcType=TIMESTAMP}, #{lastpersonid,jdbcType=INTEGER}, 
+      #{lastprocessingtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.PurchaseRequisition" >
+    insert into purchaserequisition(applicationNo, 
+      applicantID,deptID, status, explains, remarks, createDate, lastPersonID, 
+      lastProcessingTime)
+   		values(
+   		<if test="applicationNo !=null">
+   			#{applicationNo,jdbcType=VARCHAR},
+   		</if>
+   		<if test="applicantID !=null">
+   			#{applicantID,jdbcType=INTEGER},
+   		</if>
+   		<if test="deptid !=null">
+   			#{deptid,jdbcType=INTEGER},
+   		</if>
+   		<if test="status !=null">
+   			#{status,jdbcType=VARCHAR},
+   		</if> 
+   		<if test="status !=null">
+   			#{explains,jdbcType=VARCHAR},
+   		</if>
+   		<if test="remarks !=null">
+   			 #{remarks,jdbcType=VARCHAR},
+   		</if>
+   		<if test="createdate !=null">
+   			#{createdate,jdbcType=TIMESTAMP},
+   		</if>
+   		<if test="lastpersonid !=null">
+   		 	#{lastpersonid,jdbcType=INTEGER}, 
+      	</if>
+      	<if test="lastprocessingtime !=null">
+      		#{lastprocessingtime,jdbcType=TIMESTAMP}
+      	</if>)
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.PurchaseRequisition" >
+    update purchaserequisition
+    <set >
+      <if test="applicationno != null" >
+        applicationNo = #{applicationno,jdbcType=VARCHAR},
+      </if>
+      <if test="applicantid != null" >
+        applicantID = #{applicantid,jdbcType=INTEGER},
+      </if>
+      <if test="companyid != null" >
+        companyID = #{companyid,jdbcType=INTEGER},
+      </if>
+      <if test="deptid != null" >
+        deptID = #{deptid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="explains != null" >
+        explains = #{explains,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="placeofdelivery != null" >
+        placeOfDelivery = #{placeofdelivery,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastprocessingtime != null" >
+        lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where purchaseRequisitionID = #{purchaserequisitionid,jdbcType=INTEGER}
+  </update>
+  	<update id="updateByPrimaryKey" parameterType="java.lang.Integer">
+		update purchaserequisition
+		set status='待提交' where purchaserequisitionid=#{purchaserequisitionid}
+	</update>
+	<update id="subByPrimaryKey" parameterType="java.lang.Integer">
+		update purchaserequisition
+		set status='已提交' where purchaserequisitionid=#{purchaserequisitionid}
+	</update>
+</mapper>

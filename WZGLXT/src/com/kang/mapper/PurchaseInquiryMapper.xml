@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.PurchaseInquiryMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.PurchaseInquiry" >
+    <id column="purchaseInquiryID" property="purchaseinquiryid" jdbcType="INTEGER" />
+    <result column="inquiryNumber" property="inquirynumber" jdbcType="VARCHAR" />
+    <result column="startTime" property="starttime" jdbcType="TIMESTAMP" />
+    <result column="endTime" property="endtime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="inquiryDescription" property="inquirydescription" jdbcType="VARCHAR" />
+    <result column="remarks" property="remarks" jdbcType="VARCHAR" />
+    <result column="inquiryType" property="inquirytype" jdbcType="VARCHAR" />
+    <result column="lateDeliveryTime" property="latedeliverytime" jdbcType="TIMESTAMP" />
+    <result column="tenderType" property="tendertype" jdbcType="VARCHAR" />
+    <result column="currencyID" property="currencyid" jdbcType="INTEGER" />
+    <result column="taxRate" property="taxrate" jdbcType="VARCHAR" />
+    <result column="placeOfDelivery" property="placeofdelivery" jdbcType="VARCHAR" />
+    <result column="quotationType" property="quotationtype" jdbcType="VARCHAR" />
+    <result column="purchasingManager" property="purchasingmanager" jdbcType="INTEGER" />
+    <result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="lastModifiedID" property="lastmodifiedid" jdbcType="INTEGER" />
+    <result column="lastModifiedTime" property="lastmodifiedtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    purchaseInquiryID, inquiryNumber, startTime, endTime, status, inquiryDescription, 
+    remarks, inquiryType, lateDeliveryTime, tenderType, currencyID, taxRate, placeOfDelivery, 
+    quotationType, purchasingManager, createDate, lastModifiedID, lastModifiedTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from purchaseinquiry
+    where purchaseInquiryID = #{purchaseinquiryid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from purchaseinquiry
+    where purchaseInquiryID = #{purchaseinquiryid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.PurchaseInquiry" >
+    insert into purchaseinquiry (purchaseInquiryID, inquiryNumber, 
+      startTime, endTime, status, 
+      inquiryDescription, remarks, inquiryType, 
+      lateDeliveryTime, tenderType, currencyID, 
+      taxRate, placeOfDelivery, quotationType, 
+      purchasingManager, createDate, lastModifiedID, 
+      lastModifiedTime)
+    values (#{purchaseinquiryid,jdbcType=INTEGER}, #{inquirynumber,jdbcType=VARCHAR}, 
+      #{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, 
+      #{inquirydescription,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR}, #{inquirytype,jdbcType=VARCHAR}, 
+      #{latedeliverytime,jdbcType=TIMESTAMP}, #{tendertype,jdbcType=VARCHAR}, #{currencyid,jdbcType=INTEGER}, 
+      #{taxrate,jdbcType=VARCHAR}, #{placeofdelivery,jdbcType=VARCHAR}, #{quotationtype,jdbcType=VARCHAR}, 
+      #{purchasingmanager,jdbcType=INTEGER}, #{createdate,jdbcType=TIMESTAMP}, #{lastmodifiedid,jdbcType=INTEGER}, 
+      #{lastmodifiedtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.PurchaseInquiry" >
+    insert into purchaseinquiry
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="purchaseinquiryid != null" >
+        purchaseInquiryID,
+      </if>
+      <if test="inquirynumber != null" >
+        inquiryNumber,
+      </if>
+      <if test="starttime != null" >
+        startTime,
+      </if>
+      <if test="endtime != null" >
+        endTime,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="inquirydescription != null" >
+        inquiryDescription,
+      </if>
+      <if test="remarks != null" >
+        remarks,
+      </if>
+      <if test="inquirytype != null" >
+        inquiryType,
+      </if>
+      <if test="latedeliverytime != null" >
+        lateDeliveryTime,
+      </if>
+      <if test="tendertype != null" >
+        tenderType,
+      </if>
+      <if test="currencyid != null" >
+        currencyID,
+      </if>
+      <if test="taxrate != null" >
+        taxRate,
+      </if>
+      <if test="placeofdelivery != null" >
+        placeOfDelivery,
+      </if>
+      <if test="quotationtype != null" >
+        quotationType,
+      </if>
+      <if test="purchasingmanager != null" >
+        purchasingManager,
+      </if>
+      <if test="createdate != null" >
+        createDate,
+      </if>
+      <if test="lastmodifiedid != null" >
+        lastModifiedID,
+      </if>
+      <if test="lastmodifiedtime != null" >
+        lastModifiedTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="purchaseinquiryid != null" >
+        #{purchaseinquiryid,jdbcType=INTEGER},
+      </if>
+      <if test="inquirynumber != null" >
+        #{inquirynumber,jdbcType=VARCHAR},
+      </if>
+      <if test="starttime != null" >
+        #{starttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+        #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="inquirydescription != null" >
+        #{inquirydescription,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="inquirytype != null" >
+        #{inquirytype,jdbcType=VARCHAR},
+      </if>
+      <if test="latedeliverytime != null" >
+        #{latedeliverytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tendertype != null" >
+        #{tendertype,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyid != null" >
+        #{currencyid,jdbcType=INTEGER},
+      </if>
+      <if test="taxrate != null" >
+        #{taxrate,jdbcType=VARCHAR},
+      </if>
+      <if test="placeofdelivery != null" >
+        #{placeofdelivery,jdbcType=VARCHAR},
+      </if>
+      <if test="quotationtype != null" >
+        #{quotationtype,jdbcType=VARCHAR},
+      </if>
+      <if test="purchasingmanager != null" >
+        #{purchasingmanager,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastmodifiedid != null" >
+        #{lastmodifiedid,jdbcType=INTEGER},
+      </if>
+      <if test="lastmodifiedtime != null" >
+        #{lastmodifiedtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.PurchaseInquiry" >
+    update purchaseinquiry
+    <set >
+      <if test="inquirynumber != null" >
+        inquiryNumber = #{inquirynumber,jdbcType=VARCHAR},
+      </if>
+      <if test="starttime != null" >
+        startTime = #{starttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endtime != null" >
+        endTime = #{endtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="inquirydescription != null" >
+        inquiryDescription = #{inquirydescription,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
+      <if test="inquirytype != null" >
+        inquiryType = #{inquirytype,jdbcType=VARCHAR},
+      </if>
+      <if test="latedeliverytime != null" >
+        lateDeliveryTime = #{latedeliverytime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tendertype != null" >
+        tenderType = #{tendertype,jdbcType=VARCHAR},
+      </if>
+      <if test="currencyid != null" >
+        currencyID = #{currencyid,jdbcType=INTEGER},
+      </if>
+      <if test="taxrate != null" >
+        taxRate = #{taxrate,jdbcType=VARCHAR},
+      </if>
+      <if test="placeofdelivery != null" >
+        placeOfDelivery = #{placeofdelivery,jdbcType=VARCHAR},
+      </if>
+      <if test="quotationtype != null" >
+        quotationType = #{quotationtype,jdbcType=VARCHAR},
+      </if>
+      <if test="purchasingmanager != null" >
+        purchasingManager = #{purchasingmanager,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastmodifiedid != null" >
+        lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+      </if>
+      <if test="lastmodifiedtime != null" >
+        lastModifiedTime = #{lastmodifiedtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where purchaseInquiryID = #{purchaseinquiryid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.PurchaseInquiry" >
+    update purchaseinquiry
+    set inquiryNumber = #{inquirynumber,jdbcType=VARCHAR},
+      startTime = #{starttime,jdbcType=TIMESTAMP},
+      endTime = #{endtime,jdbcType=TIMESTAMP},
+      status = #{status,jdbcType=VARCHAR},
+      inquiryDescription = #{inquirydescription,jdbcType=VARCHAR},
+      remarks = #{remarks,jdbcType=VARCHAR},
+      inquiryType = #{inquirytype,jdbcType=VARCHAR},
+      lateDeliveryTime = #{latedeliverytime,jdbcType=TIMESTAMP},
+      tenderType = #{tendertype,jdbcType=VARCHAR},
+      currencyID = #{currencyid,jdbcType=INTEGER},
+      taxRate = #{taxrate,jdbcType=VARCHAR},
+      placeOfDelivery = #{placeofdelivery,jdbcType=VARCHAR},
+      quotationType = #{quotationtype,jdbcType=VARCHAR},
+      purchasingManager = #{purchasingmanager,jdbcType=INTEGER},
+      createDate = #{createdate,jdbcType=TIMESTAMP},
+      lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+      lastModifiedTime = #{lastmodifiedtime,jdbcType=TIMESTAMP}
+    where purchaseInquiryID = #{purchaseinquiryid,jdbcType=INTEGER}
+  </update>
+</mapper>

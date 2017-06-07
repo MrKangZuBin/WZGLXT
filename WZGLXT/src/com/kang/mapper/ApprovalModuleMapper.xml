@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ApprovalModuleMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.ApprovalModule" >
+    <id column="approvalModuleID" property="approvalmoduleid" jdbcType="INTEGER" />
+    <result column="moduleNameID" property="modulenameid" jdbcType="INTEGER" />
+    <result column="approvalTypeID" property="approvaltypeid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="crossLevel" property="crosslevel" jdbcType="VARCHAR" />
+    <result column="createPersonID" property="createpersonid" jdbcType="INTEGER" />
+    <result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+    <result column="lastModifiedID" property="lastmodifiedid" jdbcType="INTEGER" />
+    <result column="lastModifiedTime" property="lastmodifiedtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    approvalModuleID, moduleNameID, approvalTypeID, status, crossLevel, createPersonID, 
+    createDate, lastModifiedID, lastModifiedTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from approvalmodule
+    where approvalModuleID = #{approvalmoduleid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from approvalmodule
+    where approvalModuleID = #{approvalmoduleid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.ApprovalModule" >
+    insert into approvalmodule (approvalModuleID, moduleNameID, approvalTypeID, 
+      status, crossLevel, createPersonID, 
+      createDate, lastModifiedID, lastModifiedTime
+      )
+    values (#{approvalmoduleid,jdbcType=INTEGER}, #{modulenameid,jdbcType=INTEGER}, #{approvaltypeid,jdbcType=INTEGER}, 
+      #{status,jdbcType=VARCHAR}, #{crosslevel,jdbcType=VARCHAR}, #{createpersonid,jdbcType=INTEGER}, 
+      #{createdate,jdbcType=TIMESTAMP}, #{lastmodifiedid,jdbcType=INTEGER}, #{lastmodifiedtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.ApprovalModule" >
+    insert into approvalmodule
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="approvalmoduleid != null" >
+        approvalModuleID,
+      </if>
+      <if test="modulenameid != null" >
+        moduleNameID,
+      </if>
+      <if test="approvaltypeid != null" >
+        approvalTypeID,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="crosslevel != null" >
+        crossLevel,
+      </if>
+      <if test="createpersonid != null" >
+        createPersonID,
+      </if>
+      <if test="createdate != null" >
+        createDate,
+      </if>
+      <if test="lastmodifiedid != null" >
+        lastModifiedID,
+      </if>
+      <if test="lastmodifiedtime != null" >
+        lastModifiedTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="approvalmoduleid != null" >
+        #{approvalmoduleid,jdbcType=INTEGER},
+      </if>
+      <if test="modulenameid != null" >
+        #{modulenameid,jdbcType=INTEGER},
+      </if>
+      <if test="approvaltypeid != null" >
+        #{approvaltypeid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crosslevel != null" >
+        #{crosslevel,jdbcType=VARCHAR},
+      </if>
+      <if test="createpersonid != null" >
+        #{createpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastmodifiedid != null" >
+        #{lastmodifiedid,jdbcType=INTEGER},
+      </if>
+      <if test="lastmodifiedtime != null" >
+        #{lastmodifiedtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.ApprovalModule" >
+    update approvalmodule
+    <set >
+      <if test="modulenameid != null" >
+        moduleNameID = #{modulenameid,jdbcType=INTEGER},
+      </if>
+      <if test="approvaltypeid != null" >
+        approvalTypeID = #{approvaltypeid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="crosslevel != null" >
+        crossLevel = #{crosslevel,jdbcType=VARCHAR},
+      </if>
+      <if test="createpersonid != null" >
+        createPersonID = #{createpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastmodifiedid != null" >
+        lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+      </if>
+      <if test="lastmodifiedtime != null" >
+        lastModifiedTime = #{lastmodifiedtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where approvalModuleID = #{approvalmoduleid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.ApprovalModule" >
+    update approvalmodule
+    set moduleNameID = #{modulenameid,jdbcType=INTEGER},
+      approvalTypeID = #{approvaltypeid,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      crossLevel = #{crosslevel,jdbcType=VARCHAR},
+      createPersonID = #{createpersonid,jdbcType=INTEGER},
+      createDate = #{createdate,jdbcType=TIMESTAMP},
+      lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+      lastModifiedTime = #{lastmodifiedtime,jdbcType=TIMESTAMP}
+    where approvalModuleID = #{approvalmoduleid,jdbcType=INTEGER}
+  </update>
+</mapper>

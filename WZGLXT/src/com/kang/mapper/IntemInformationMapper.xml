@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.IntemInformationMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.IntemInformation">
+		<id column="intemInformationID" property="inteminformationid"
+			jdbcType="INTEGER" />
+		<result column="itemCode" property="itemcode" jdbcType="VARCHAR" />
+		<result column="articleBarCode" property="articlebarcode"
+			jdbcType="VARCHAR" />
+		<result column="chineseName" property="chinesename" jdbcType="VARCHAR" />
+		<result column="chineseAbbreviation" property="chineseabbreviation"
+			jdbcType="VARCHAR" />
+		<result column="englishName" property="englishname" jdbcType="VARCHAR" />
+		<result column="englishAbbreviation" property="englishabbreviation"
+			jdbcType="VARCHAR" />
+		<result column="category" property="category" jdbcType="VARCHAR" />
+		<result column="materialMaterial" property="materialmaterial"
+			jdbcType="VARCHAR" />
+		<result column="brand" property="brand" jdbcType="VARCHAR" />
+		<result column="validity" property="validity" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="itemStatus" property="itemstatus" jdbcType="VARCHAR" />
+		<result column="picture" property="picture" jdbcType="VARCHAR" />
+		<result column="itemProperties" property="itemproperties"
+			jdbcType="VARCHAR" />
+		<result column="deficitRatio" property="deficitratio" jdbcType="VARCHAR" />
+		<result column="salesSpecifications" property="salesspecifications"
+			jdbcType="VARCHAR" />
+		<result column="salesUnit" property="salesunit" jdbcType="VARCHAR" />
+		<result column="purchaseSpecifications" property="purchasespecifications"
+			jdbcType="VARCHAR" />
+		<result column="purchasingUnit" property="purchasingunit"
+			jdbcType="VARCHAR" />
+		<result column="placeOfOrigin" property="placeoforigin"
+			jdbcType="VARCHAR" />
+		<result column="maxStock" property="maxstock" jdbcType="INTEGER" />
+		<result column="minStock" property="minstock" jdbcType="INTEGER" />
+		<result column="currentStock" property="currentstock" jdbcType="INTEGER" />
+		<result column="latestPrice" property="latestprice" jdbcType="DECIMAL" />
+		<result column="proposalPrice" property="proposalprice"
+			jdbcType="DECIMAL" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastProcessingTime" property="lastprocessingtime"
+			jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+		<result column="loginName" property="createpersonname"
+			jdbcType="VARCHAR" />
+		<result column="logname" property="lastpersonname" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="selpurjson" resultMap="BaseResultMap" parameterType="java.util.List">
+	  	SELECT intemInformationID,articlebarcode,itemcode,chinesename,currentstock,purchasespecifications,purchasingunit
+			FROM inteminformation
+				WHERE itemcode IN(
+					<foreach collection="list" index="index" item="item" separator="," >
+			(#{item.itemcode,jdbcType=VARCHAR})</foreach>)
+  	</select>
+	<select id="inventoryIteminfo" resultType="com.kang.pojo.InventoryIteminfo"
+		parameterType="map">
+		select itemCode,articleBarCode,chineseName,materialMaterial,maxStock,minStock,currentStock,(
+		case
+		when currentStock &gt; maxStock then '库存过多'
+		when currentStock &lt; minStock then '库存不足'
+		end
+		) warningtype from inteminformation
+		<where>
+		(currentStock &gt; maxStock or currentStock &lt; minStock)
+			<if test="warningtype == '库存过多'">
+				and currentStock &gt; maxStock
+			</if>
+			<if test="warningtype == '库存不足'">
+				and currentStock &lt; minStock
+			</if>
+			<if test="itemcode != null and itemcode != ''">
+				and itemCode like concat(concat('%', #{itemcode }),
+				'%')
+			</if>
+			<if test="itemname != null and itemname != ''">
+				and chineseName like concat(concat('%', #{itemname }),
+				'%')
+			</if>
+			<if test="itemmaterial != null and itemmaterial != ''">
+				and materialMaterial = #{itemmaterial }
+			</if>
+		</where>
+	</select>
+	<select id="findPagingList" resultMap="BaseResultMap"
+		parameterType="map">
+		select i.* , u.loginName , us.loginName as logname from
+		inteminformation i, user
+		u ,user us
+		<where>
+			and i.createPersonID = u.userID and i.lastPersonID = us.userID
+			<if test="itemcode != null and itemcode != ''">
+				and itemCode like concat(concat('%', #{itemcode }),
+				'%')
+			</if>
+			<if test="itemname != null and itemname != ''">
+				and chineseName like concat(concat('%', #{itemname }),
+				'%')
+			</if>
+			<if test="itemstatus != null and itemstatus != ''">
+				and itemStatus = #{itemstatus }
+			</if>
+			<if test="itemmaterial != null and itemmaterial != ''">
+				and materialMaterial = #{itemmaterial }
+			</if>
+		</where> order by createDate 
+		limit #{currpage } , #{pagecount}
+		<!-- order by createTime -->
+	</select>
+	<!-- 判断物品表中是否有这件商品-根据物品名称判断 -->
+	<select id="selectByItemname" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select inteminformationid,currentstock
+		from
+		inteminformation where chinesename =
+		#{chinesename,jdbcType=INTEGER}
+	</select>
+
+
+	<!-- 采购入库-采购订单入库查询 -->
+	<select id="selectcaigou" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		inteminformationid,itemcode,articlebarcode,chinesename,materialmaterial,purchasespecifications,purchasingunit,latestprice,currentstock
+		from inteminformation where intemInformationID =
+		#{inteminformationid,jdbcType=INTEGER}
+	</select>
+
+	<select id="selrow" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from inteminformation
+		<where>
+			<if test="itemcode != null and itemcode != ''">
+				and itemCode like concat(concat('%', #{itemcode }),
+				'%')
+			</if>
+			<if test="itemname != null and itemname != ''">
+				and chineseName like concat(concat('%', #{itemname }),
+				'%')
+			</if>
+			<if test="itemstatus != null and itemstatus != ''">
+				and itemStatus = #{itemstatus }
+			</if>
+			<if test="itemmaterial != null and itemmaterial != ''">
+				and materialMaterial = #{itemmaterial }
+			</if>
+		</where>
+	</select>
+	<sql id="Base_Column_List">
+		intemInformationID, itemCode, articleBarCode, chineseName,
+		chineseAbbreviation,
+		englishName,
+		englishAbbreviation, category,
+		materialMaterial, brand, validity, description, itemStatus, picture,
+		itemProperties,
+		deficitRatio,
+		salesSpecifications, salesUnit,
+		purchaseSpecifications,
+		purchasingUnit,
+		placeOfOrigin, maxStock,
+		minStock, currentStock,
+		latestPrice, proposalPrice,
+		createDate,
+		lastProcessingTime,
+		createPersonID, lastPersonID
+	</sql>
+	<select id="selectItem" parameterType="map" resultMap="BaseResultMap">
+	select articleBarCode,chineseName,itemCode,category,proposalPrice,latestPrice FROM inteminformation
+		where 1=1
+			<if test="itemcode!=null and itemcode!='' ">
+				and itemCode like '%${itemcode}%'
+			</if>
+			<if test="chinesename!=null and chinesename!='' ">
+				and chineseName like '%${chinesename}%'
+			</if>
+	</select>
+	<!-- 查询所有物品信息 -->
+	<select id="sellist" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from inteminformation
+	</select>
+	<sql id="twoList">
+		intemInformationID,materialMaterial
+	</sql>
+	<sql id="sixList">
+		itemCode,chineseName,articleBarCode,purchaseSpecifications,purchasingUnit,currentStock
+	</sql>
+	<select id="selectAddItem" resultType="com.kang.pojo.AddItem">
+		SELECT i.intemInformationID,i.articleBarCode,i.itemCode,i.chineseName,
+			i.proposalPrice,i.latestPrice,c.categoryName 
+				FROM inteminformation i,category c
+					WHERE i.category=c.categoryName; 
+	</select>
+	<!-- 采购申请物品 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="sixList" />
+		from inteminformation
+		where intemInformationID =
+		#{inteminformationid,jdbcType=INTEGER}
+	</select>
+	<select id="selectByID" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from inteminformation
+		where intemInformationID =
+		#{inteminformationid,jdbcType=INTEGER}
+	</select>
+	<!-- id和物料类型 -->
+	<select id="selectIntemInformation" resultMap="BaseResultMap">
+		select
+		intemInformationID,materialMaterial
+		from inteminformation
+	</select>
+	<!--退货处理详情 ：物品  -->
+	<select id="selreturnItem" resultType="com.kang.pojo.Grouppojo">
+		SELECT i.itemCode,i.chineseName as intermationName,i.articleBarCode,i.purchaseSpecifications,i.purchasingUnit,ri.number
+			FROM returnrequest r,
+				inteminformation i,returnrequest_iteminformation ri
+				WHERE 1=1
+					AND r.returnRequestID=ri.returnRequestID 
+					AND ri.itemInformationID=i.intemInformationID
+					AND r.returnRequestID=#{returnRequestID};
+	</select>
+	<!-- 待退货物资-简单查询物品表 -->
+	<select id="selectdai_request" resultMap="BaseResultMap">
+		select
+		inteminformationid,itemcode,chinesename,purchasespecifications,category,materialmaterial
+		from inteminformation
+	</select>
+
+	<select id="selInf" resultMap="BaseResultMap">
+		select
+		<include refid="twoList" />
+		from inteminformation
+	</select>
+
+	<select id="countkucun" resultType="java.lang.Integer">
+		select count(*) from
+		inteminformation
+	</select>
+
+	<select id="selectStock" resultMap="BaseResultMap"
+		parameterType="map">
+		select
+		inteminformationid,itemcode,articlebarcode,chinesename,maxstock,currentstock,salesunit
+		from inteminformation ORDER BY createdate
+		desc limit
+		#{mincount},#{maxcount}
+	</select>
+
+	<!-- 查询功能 -->
+	<select id="selectByWheres" resultType="com.kang.pojo.StockPoJo"
+		parameterType="map">
+		SELECT
+		iif.itemcode,
+		iif.chinesename,
+		iif.articlebarcode,
+		iif.category,
+		i.inventorylocationname,
+		iif.maxstock,
+		iif.currentstock,
+		iif.salesunit
+
+		FROM
+		inteminformation iif,
+		warehousemanagement_iteminformation wf,
+		inventorylocation i
+
+		WHERE 1=1
+		AND
+		iif.inteminformationid=wf.itemInformationID
+		AND
+		wf.inventoryLocationID=i.inventoryLocationID
+		<if test="itemcode !=null and itemcode !='' ">
+			AND iif.itemcode like'%${itemcode}%'
+		</if>
+		<if test="category !=null and category !='' ">
+			AND iif.category like'%${category}%'
+		</if>
+		<if test="itemProperties !=null and itemProperties !='' ">
+			AND iif.itemProperties=#{itemProperties}
+		</if>
+		<if test="itemcodes !=null and itemcodes !='' ">
+			AND iif.articleBarCode like'%${itemcodes}%'
+		</if>
+		<if test="itemname !=null and itemname !='' ">
+			AND iif.chineseName like'%${itemname}%'
+		</if>
+		<if test="materialmaterial !=null and materialmaterial !='' ">
+			AND iif.materialmaterial=#{materialmaterial}
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY iif.lastProcessingTime desc limit
+			#{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selectByWherescount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+		count(*)
+		FROM
+		inteminformation iif,
+		warehousemanagement_iteminformation wf,
+		inventorylocation i
+
+		WHERE 1=1
+		AND
+		iif.inteminformationid=wf.itemInformationID
+		AND
+		wf.inventoryLocationID=i.inventoryLocationID
+		<if test="itemcode !=null and itemcode !='' ">
+			AND iif.itemcode like'%${itemcode}%'
+		</if>
+		<if test="category !=null and category !='' ">
+			AND iif.category like'%${category}%'
+		</if>
+		<if test="itemProperties !=null and itemProperties !='' ">
+			AND iif.itemProperties=#{itemProperties}
+		</if>
+		<if test="itemname !=null and itemname !='' ">
+			AND iif.chineseName like'%${itemname}%'
+		</if>
+		<if test="materialmaterial !=null and materialmaterial !='' ">
+			AND iif.materialmaterial=#{materialmaterial}
+		</if>
+	</select>
+	<insert id="insertItem" parameterType="map">
+		INSERT INTO inteminformation(itemCode,articleBarCode,
+			chineseName,materialmaterial,purchaseSpecifications,
+			purchasingUnit) 
+		VALUES(#{itemCode},#{articleBarCode},
+			#{intermationName},#{materialmaterial},#{purchaseSpecifications},
+			#{purchasingUnit})
+	</insert>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		inteminformation
+		where intemInformationID =
+		#{inteminformationid,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insert" parameterType="com.kang.pojo.IntemInformation">
+		insert into inteminformation
+		(intemInformationID, itemCode,
+		articleBarCode,
+		chineseName,
+		chineseAbbreviation, englishName,
+		englishAbbreviation, category,
+		materialMaterial,,brand,validity,description
+		itemStatus, picture,
+		itemProperties,
+		deficitRatio,
+		salesSpecifications, salesUnit,
+		purchaseSpecifications, purchasingUnit,
+		placeOfOrigin, maxStock,
+		minStock,
+		currentStock, latestPrice,
+		proposalPrice,
+		createDate,
+		lastProcessingTime, createPersonID,
+		lastPersonID)
+		values
+		(#{inteminformationid,jdbcType=INTEGER},
+		#{itemcode,jdbcType=VARCHAR},
+		#{articlebarcode,jdbcType=VARCHAR},
+		#{chinesename,jdbcType=VARCHAR},
+		#{chineseabbreviation,jdbcType=VARCHAR},
+		#{englishname,jdbcType=VARCHAR},
+		#{englishabbreviation,jdbcType=VARCHAR}, #{category,jdbcType=VARCHAR},
+		#{materialmaterial,jdbcType=VARCHAR},#{brand,jdbcType=VARCHAR},#{validity,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},
+		#{itemstatus,jdbcType=VARCHAR},
+		#{picture,jdbcType=VARCHAR},
+		#{itemproperties,jdbcType=VARCHAR},
+		#{deficitratio,jdbcType=VARCHAR},
+		#{salesspecifications,jdbcType=VARCHAR},
+		#{salesunit,jdbcType=VARCHAR},
+		#{purchasespecifications,jdbcType=VARCHAR},
+		#{purchasingunit,jdbcType=VARCHAR},
+		#{placeoforigin,jdbcType=VARCHAR},
+		#{maxstock,jdbcType=INTEGER}, #{minstock,jdbcType=INTEGER},
+		#{currentstock,jdbcType=INTEGER}, #{latestprice,jdbcType=DECIMAL},
+		#{proposalprice,jdbcType=DECIMAL},
+		#{createdate,jdbcType=TIMESTAMP},
+		#{lastprocessingtime,jdbcType=TIMESTAMP},
+		#{createpersonid,jdbcType=INTEGER},
+		#{lastpersonid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.IntemInformation">
+		insert into inteminformation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="inteminformationid != null">
+				intemInformationID,
+			</if>
+			<if test="itemcode != null">
+				itemCode,
+			</if>
+			<if test="articlebarcode != null">
+				articleBarCode,
+			</if>
+			<if test="chinesename != null">
+				chineseName,
+			</if>
+			<if test="chineseabbreviation != null">
+				chineseAbbreviation,
+			</if>
+			<if test="englishname != null">
+				englishName,
+			</if>
+			<if test="englishabbreviation != null">
+				englishAbbreviation,
+			</if>
+			<if test="category != null">
+				category,
+			</if>
+			<if test="materialmaterial != null">
+				materialMaterial,
+			</if>
+			<if test="brand != null">
+				brand,
+			</if>
+			<if test="validity != null">
+				validity,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="itemstatus != null">
+				itemStatus,
+			</if>
+			<if test="picture != null">
+				picture,
+			</if>
+			<if test="itemproperties != null">
+				itemProperties,
+			</if>
+			<if test="deficitratio != null">
+				deficitRatio,
+			</if>
+			<if test="salesspecifications != null">
+				salesSpecifications,
+			</if>
+			<if test="salesunit != null">
+				salesUnit,
+			</if>
+			<if test="purchasespecifications != null">
+				purchaseSpecifications,
+			</if>
+			<if test="purchasingunit != null">
+				purchasingUnit,
+			</if>
+			<if test="placeoforigin != null">
+				placeOfOrigin,
+			</if>
+			<if test="maxstock != null">
+				maxStock,
+			</if>
+			<if test="minstock != null">
+				minStock,
+			</if>
+			<if test="currentstock != null">
+				currentStock,
+			</if>
+			<if test="latestprice != null">
+				latestPrice,
+			</if>
+			<if test="proposalprice != null">
+				proposalPrice,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+			<if test="lastprocessingtime != null">
+				lastProcessingTime,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="inteminformationid != null">
+				#{inteminformationid,jdbcType=INTEGER},
+			</if>
+			<if test="itemcode != null">
+				#{itemcode,jdbcType=VARCHAR},
+			</if>
+			<if test="articlebarcode != null">
+				#{articlebarcode,jdbcType=VARCHAR},
+			</if>
+			<if test="chinesename != null">
+				#{chinesename,jdbcType=VARCHAR},
+			</if>
+			<if test="chineseabbreviation != null">
+				#{chineseabbreviation,jdbcType=VARCHAR},
+			</if>
+			<if test="englishname != null">
+				#{englishname,jdbcType=VARCHAR},
+			</if>
+			<if test="englishabbreviation != null">
+				#{englishabbreviation,jdbcType=VARCHAR},
+			</if>
+			<if test="category != null">
+				#{category,jdbcType=VARCHAR},
+			</if>
+			<if test="materialmaterial != null">
+				#{materialmaterial,jdbcType=VARCHAR},
+			</if>
+			<if test="brand != null">
+				#{brand,jdbcType=VARCHAR},
+			</if>
+			<if test="validity != null">
+				#{validity,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="itemstatus != null">
+				#{itemstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="picture != null">
+				#{picture,jdbcType=VARCHAR},
+			</if>
+			<if test="itemproperties != null">
+				#{itemproperties,jdbcType=VARCHAR},
+			</if>
+			<if test="deficitratio != null">
+				#{deficitratio,jdbcType=VARCHAR},
+			</if>
+			<if test="salesspecifications != null">
+				#{salesspecifications,jdbcType=VARCHAR},
+			</if>
+			<if test="salesunit != null">
+				#{salesunit,jdbcType=VARCHAR},
+			</if>
+			<if test="purchasespecifications != null">
+				#{purchasespecifications,jdbcType=VARCHAR},
+			</if>
+			<if test="purchasingunit != null">
+				#{purchasingunit,jdbcType=VARCHAR},
+			</if>
+			<if test="placeoforigin != null">
+				#{placeoforigin,jdbcType=VARCHAR},
+			</if>
+			<if test="maxstock != null">
+				#{maxstock,jdbcType=INTEGER},
+			</if>
+			<if test="minstock != null">
+				#{minstock,jdbcType=INTEGER},
+			</if>
+			<if test="currentstock != null">
+				#{currentstock,jdbcType=INTEGER},
+			</if>
+			<if test="latestprice != null">
+				#{latestprice,jdbcType=DECIMAL},
+			</if>
+			<if test="proposalprice != null">
+				#{proposalprice,jdbcType=DECIMAL},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastprocessingtime != null">
+				#{lastprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				#{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.IntemInformation">
+		update inteminformation
+		<set>
+			<if test="itemcode != null">
+				itemCode = #{itemcode,jdbcType=VARCHAR},
+			</if>
+			<if test="articlebarcode != null">
+				articleBarCode = #{articlebarcode,jdbcType=VARCHAR},
+			</if>
+			<if test="chinesename != null">
+				chineseName = #{chinesename,jdbcType=VARCHAR},
+			</if>
+			<if test="chineseabbreviation != null">
+				chineseAbbreviation =
+				#{chineseabbreviation,jdbcType=VARCHAR},
+			</if>
+			<if test="englishname != null">
+				englishName = #{englishname,jdbcType=VARCHAR},
+			</if>
+			<if test="englishabbreviation != null">
+				englishAbbreviation =
+				#{englishabbreviation,jdbcType=VARCHAR},
+			</if>
+			<if test="category != null">
+				category = #{category,jdbcType=VARCHAR},
+			</if>
+			<if test="materialmaterial != null">
+				materialMaterial = #{materialmaterial,jdbcType=VARCHAR},
+			</if>
+			<if test="brand != null">
+				brand = #{brand,jdbcType=VARCHAR},
+			</if>
+			<if test="validity != null">
+				validity = #{validity,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="itemstatus != null">
+				itemStatus = #{itemstatus,jdbcType=VARCHAR},
+			</if>
+			<if test="picture != null">
+				picture = #{picture,jdbcType=VARCHAR},
+			</if>
+			<if test="itemproperties != null">
+				itemProperties = #{itemproperties,jdbcType=VARCHAR},
+			</if>
+			<if test="deficitratio != null">
+				deficitRatio = #{deficitratio,jdbcType=VARCHAR},
+			</if>
+			<if test="salesspecifications != null">
+				salesSpecifications =
+				#{salesspecifications,jdbcType=VARCHAR},
+			</if>
+			<if test="salesunit != null">
+				salesUnit = #{salesunit,jdbcType=VARCHAR},
+			</if>
+			<if test="purchasespecifications != null">
+				purchaseSpecifications =
+				#{purchasespecifications,jdbcType=VARCHAR},
+			</if>
+			<if test="purchasingunit != null">
+				purchasingUnit = #{purchasingunit,jdbcType=VARCHAR},
+			</if>
+			<if test="placeoforigin != null">
+				placeOfOrigin = #{placeoforigin,jdbcType=VARCHAR},
+			</if>
+			<if test="maxstock != null">
+				maxStock = #{maxstock,jdbcType=INTEGER},
+			</if>
+			<if test="minstock != null">
+				minStock = #{minstock,jdbcType=INTEGER},
+			</if>
+			<if test="currentstock != null">
+				currentStock = #{currentstock,jdbcType=INTEGER},
+			</if>
+			<if test="latestprice != null">
+				latestPrice = #{latestprice,jdbcType=DECIMAL},
+			</if>
+			<if test="proposalprice != null">
+				proposalPrice = #{proposalprice,jdbcType=DECIMAL},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastprocessingtime != null">
+				lastProcessingTime =
+				#{lastprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where intemInformationID = #{inteminformationid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.IntemInformation">
+		update
+		inteminformation
+		set itemCode = #{itemcode,jdbcType=VARCHAR},
+		articleBarCode = #{articlebarcode,jdbcType=VARCHAR},
+		chineseName =
+		#{chinesename,jdbcType=VARCHAR},
+		chineseAbbreviation =
+		#{chineseabbreviation,jdbcType=VARCHAR},
+		englishName =
+		#{englishname,jdbcType=VARCHAR},
+		englishAbbreviation =
+		#{englishabbreviation,jdbcType=VARCHAR},
+		category =
+		#{category,jdbcType=VARCHAR},
+		materialMaterial =
+		#{materialmaterial,jdbcType=VARCHAR},
+		brand =
+		#{brand,jdbcType=VARCHAR},
+		validity =
+		#{validity,jdbcType=VARCHAR},
+		description =
+		#{description,jdbcType=VARCHAR},
+		itemStatus =
+		#{itemstatus,jdbcType=VARCHAR},
+		picture = #{picture,jdbcType=VARCHAR},
+		itemProperties = #{itemproperties,jdbcType=VARCHAR},
+		deficitRatio =
+		#{deficitratio,jdbcType=VARCHAR},
+		salesSpecifications =
+		#{salesspecifications,jdbcType=VARCHAR},
+		salesUnit =
+		#{salesunit,jdbcType=VARCHAR},
+		purchaseSpecifications =
+		#{purchasespecifications,jdbcType=VARCHAR},
+		purchasingUnit =
+		#{purchasingunit,jdbcType=VARCHAR},
+		placeOfOrigin =
+		#{placeoforigin,jdbcType=VARCHAR},
+		maxStock =
+		#{maxstock,jdbcType=INTEGER},
+		minStock = #{minstock,jdbcType=INTEGER},
+		currentStock = #{currentstock,jdbcType=INTEGER},
+		latestPrice =
+		#{latestprice,jdbcType=DECIMAL},
+		proposalPrice =
+		#{proposalprice,jdbcType=DECIMAL},
+		createDate =
+		#{createdate,jdbcType=TIMESTAMP},
+		lastProcessingTime =
+		#{lastprocessingtime,jdbcType=TIMESTAMP},
+		createPersonID =
+		#{createpersonid,jdbcType=INTEGER},
+		lastPersonID =
+		#{lastpersonid,jdbcType=INTEGER}
+		where intemInformationID =
+		#{inteminformationid,jdbcType=INTEGER}
+	</update>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.WorkFlowMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.WorkFlow" >
+    <id column="workFlowID" property="workflowid" jdbcType="INTEGER" />
+    <result column="approvalModuleID" property="approvalmoduleid" jdbcType="INTEGER" />
+    <result column="processName" property="processname" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+    <result column="lastProcessingTime" property="lastprocessingtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    workFlowID, approvalModuleID, processName, status, lastPersonID, lastProcessingTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from workflow
+    where workFlowID = #{workflowid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from workflow
+    where workFlowID = #{workflowid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.WorkFlow" >
+    insert into workflow (workFlowID, approvalModuleID, processName, 
+      status, lastPersonID, lastProcessingTime
+      )
+    values (#{workflowid,jdbcType=INTEGER}, #{approvalmoduleid,jdbcType=INTEGER}, #{processname,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{lastpersonid,jdbcType=INTEGER}, #{lastprocessingtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.WorkFlow" >
+    insert into workflow
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="workflowid != null" >
+        workFlowID,
+      </if>
+      <if test="approvalmoduleid != null" >
+        approvalModuleID,
+      </if>
+      <if test="processname != null" >
+        processName,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID,
+      </if>
+      <if test="lastprocessingtime != null" >
+        lastProcessingTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="workflowid != null" >
+        #{workflowid,jdbcType=INTEGER},
+      </if>
+      <if test="approvalmoduleid != null" >
+        #{approvalmoduleid,jdbcType=INTEGER},
+      </if>
+      <if test="processname != null" >
+        #{processname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastpersonid != null" >
+        #{lastpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastprocessingtime != null" >
+        #{lastprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.WorkFlow" >
+    update workflow
+    <set >
+      <if test="approvalmoduleid != null" >
+        approvalModuleID = #{approvalmoduleid,jdbcType=INTEGER},
+      </if>
+      <if test="processname != null" >
+        processName = #{processname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastprocessingtime != null" >
+        lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where workFlowID = #{workflowid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.WorkFlow" >
+    update workflow
+    set approvalModuleID = #{approvalmoduleid,jdbcType=INTEGER},
+      processName = #{processname,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+      lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP}
+    where workFlowID = #{workflowid,jdbcType=INTEGER}
+  </update>
+</mapper>

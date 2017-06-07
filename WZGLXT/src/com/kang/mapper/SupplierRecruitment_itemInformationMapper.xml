@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.SupplierRecruitment_itemInformationMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.SupplierRecruitment_itemInformation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="supplierRecruitmentID" property="supplierrecruitmentid" jdbcType="INTEGER" />
+    <result column="itemInformationID" property="iteminformationid" jdbcType="INTEGER" />
+    <result column="plannedPurchases" property="plannedpurchases" jdbcType="INTEGER" />
+    <result column="yearPurchases" property="yearpurchases" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, supplierRecruitmentID, itemInformationID, plannedPurchases, yearPurchases
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from supplierrecruitment_iteminformation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from supplierrecruitment_iteminformation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.SupplierRecruitment_itemInformation" >
+    insert into supplierrecruitment_iteminformation (id, supplierRecruitmentID, itemInformationID, 
+      plannedPurchases, yearPurchases)
+    values (#{id,jdbcType=INTEGER}, #{supplierrecruitmentid,jdbcType=INTEGER}, #{iteminformationid,jdbcType=INTEGER}, 
+      #{plannedpurchases,jdbcType=INTEGER}, #{yearpurchases,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.SupplierRecruitment_itemInformation" >
+    insert into supplierrecruitment_iteminformation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="supplierrecruitmentid != null" >
+        supplierRecruitmentID,
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID,
+      </if>
+      <if test="plannedpurchases != null" >
+        plannedPurchases,
+      </if>
+      <if test="yearpurchases != null" >
+        yearPurchases,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="supplierrecruitmentid != null" >
+        #{supplierrecruitmentid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="plannedpurchases != null" >
+        #{plannedpurchases,jdbcType=INTEGER},
+      </if>
+      <if test="yearpurchases != null" >
+        #{yearpurchases,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.SupplierRecruitment_itemInformation" >
+    update supplierrecruitment_iteminformation
+    <set >
+      <if test="supplierrecruitmentid != null" >
+        supplierRecruitmentID = #{supplierrecruitmentid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="plannedpurchases != null" >
+        plannedPurchases = #{plannedpurchases,jdbcType=INTEGER},
+      </if>
+      <if test="yearpurchases != null" >
+        yearPurchases = #{yearpurchases,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.SupplierRecruitment_itemInformation" >
+    update supplierrecruitment_iteminformation
+    set supplierRecruitmentID = #{supplierrecruitmentid,jdbcType=INTEGER},
+      itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      plannedPurchases = #{plannedpurchases,jdbcType=INTEGER},
+      yearPurchases = #{yearpurchases,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

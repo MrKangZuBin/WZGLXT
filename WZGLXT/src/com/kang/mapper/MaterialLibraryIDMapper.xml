@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.MaterialLibraryIDMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.MaterialLibraryID">
+		<id column="materialLibraryID" property="materiallibraryid"
+			jdbcType="INTEGER" />
+		<result column="requisitionNumber" property="requisitionnumber"
+			jdbcType="VARCHAR" />
+		<result column="inventoryLocationID" property="inventorylocationid"
+			jdbcType="INTEGER" />
+		<result column="categoryID" property="categoryid" jdbcType="INTEGER" />
+		<result column="pickingID" property="pickingid" jdbcType="INTEGER" />
+		<result column="state" property="state" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastProcessingTime" property="lastprocessingtime"
+			jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		materialLibraryID, requisitionNumber, inventoryLocationID, categoryID, pickingID,
+		state, description, createDate, lastProcessingTime, createPersonID,
+		lastPersonID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from materiallibraryid
+		where materialLibraryid = #{materiallibraryid,jdbcType=INTEGER}
+	</select>
+
+	<!-- 查询领料出库表的所有信息 -->
+	<select id="selectAllMaterialLibraryID" parameterType="map"
+		resultMap="BaseResultMap">
+		select
+		materiallibraryid,requisitionnumber,description,materiallibraryid,inventorylocationid,categoryid,pickingid,createdate,state
+		from materiallibraryid ORDER BY createdate
+		desc limit
+		#{mincount},#{maxcount}
+	</select>
+
+	<!-- 查询领料出库表的数据的总条数 -->
+	<select id="countMaterialLibraryID" resultType="java.lang.Integer">
+		select count(*) from materiallibraryid
+	</select>
+	<select id="waitMePlay" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from materiallibraryid where createPersonID=#{id} and state='未确认'
+	</select>
+	<select id="played" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from materiallibraryid where createPersonID=#{id} and state='已确认'
+	</select>
+	<select id="MyDJ" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from materiallibraryid where createPersonID=#{id}
+	</select>
+	<select id="notgMyDJ" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from materiallibraryid where createPersonID=#{id} and state='未通过'
+	</select>
+	<!-- 根据入库单号查询id -->
+	<select id="selectByNumber" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select materiallibraryid from materiallibraryid where requisitionNumber=#{requisitionNumber}
+	</select>
+
+	<!-- 查询功能 -->
+	<select id="selectByWheres" resultType="com.kang.pojo.MaterialLibraryIDPoJo"
+		parameterType="map">
+		SELECT
+		
+		m.materiallibraryid,
+		m.requisitionnumber,
+		m.description,
+		i.inventorylocationName,
+		mi.number,
+		o.organizationname,
+		user.loginname,
+		m.state,
+		m.lastprocessingtime
+		
+		FROM
+		materiallibraryid m,
+		materiallibrary_inventorylocation_iteminformation mi,
+		user user,
+		organization o,
+		inventorylocation i
+
+		WHERE 1=1
+		AND
+		m.materiallibraryid=mi.materiallibraryid
+		AND
+		m.categoryid=o.organizationid
+		AND
+		mi.inventoryLocationID=i.inventoryLocationID
+		AND
+		m.pickingID=user.userid
+		<if test="warehousenumber !=null and warehousenumber!='' ">
+			AND m.requisitionNumber like'%${warehousenumber}%'
+		</if>
+		<if test="createtime !=null and createtime !='' ">
+			AND m.lastProcessingTime &gt; #{createtime}
+		</if>
+		<if test="finalprocessingtime !=null and finalprocessingtime !='' ">
+			AND m.lastProcessingTime &lt; #{finalprocessingtime}
+		</if>
+		<if test="lastpersonid !=null and lastpersonid !='' ">
+			AND m.pickingID=#{lastpersonid}
+		</if>
+		<if test="warehousemanagementid !=null and warehousemanagementid !='' ">
+			AND i.inventoryLocationName like'%${warehousemanagementid}%'
+		</if>
+		<if test="company !=null and company !='' ">
+			AND m.description like'%${company}%'
+		</if>
+		<if test="organizationName !=null and organizationName !='' ">
+			AND o.organizationid=#{organizationName}
+		</if>
+		<if test="status !=null and status !='' ">
+			AND m.state=#{status}
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY m.lastProcessingTime desc limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selectByWherescount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+			count(*)
+		FROM
+		materiallibraryid m,
+		materiallibrary_inventorylocation_iteminformation mi,
+		user user,
+		organization o,
+		inventorylocation i
+
+		WHERE 1=1
+		AND
+		m.materiallibraryid=mi.materiallibraryid
+		AND
+		m.categoryid=o.organizationid
+		AND
+		mi.inventoryLocationID=i.inventoryLocationID
+		AND
+		m.pickingID=user.userid
+		<if test="warehousenumber !=null and warehousenumber!='' ">
+			AND m.requisitionNumber like'%${warehousenumber}%'
+		</if>
+		<if test="createtime !=null and createtime !='' ">
+			AND m.lastProcessingTime &gt; #{createtime}
+		</if>
+		<if test="finalprocessingtime !=null and finalprocessingtime !='' ">
+			AND m.lastProcessingTime &gt; #{finalprocessingtime}
+		</if>
+		<if test="lastpersonid !=null and lastpersonid !='' ">
+			AND m.pickingID=#{lastpersonid}
+		</if>
+		<if test="warehousemanagementid !=null and warehousemanagementid !='' ">
+			AND i.inventoryLocationName like'%${warehousemanagementid}%'
+		</if>
+		<if test="company !=null and company !='' ">
+			AND m.description like'%${company}%'
+		</if>
+		<if test="organizationName !=null and organizationName !='' ">
+			AND o.organizationid=#{organizationName}
+		</if>
+		<if test="status !=null and status !='' ">
+			AND m.state=#{status}
+		</if>
+	</select>
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from materiallibraryid
+		where materialLibraryID = #{materiallibraryid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.MaterialLibraryID">
+		insert into materiallibraryid (materialLibraryID, requisitionNumber,
+		inventoryLocationID, categoryID, pickingID,
+		state, description, createDate,
+		lastProcessingTime, createPersonID, lastPersonID
+		)
+		values (#{materiallibraryid,jdbcType=INTEGER},
+		#{requisitionnumber,jdbcType=VARCHAR},
+		#{inventorylocationid,jdbcType=INTEGER},
+		#{categoryid,jdbcType=INTEGER}, #{pickingid,jdbcType=INTEGER},
+		#{state,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR},
+		#{createdate,jdbcType=TIMESTAMP},
+		#{lastprocessingtime,jdbcType=TIMESTAMP},
+		#{createpersonid,jdbcType=INTEGER}, #{lastpersonid,jdbcType=INTEGER}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.MaterialLibraryID">
+		insert into materiallibraryid
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="materiallibraryid != null">
+				materialLibraryID,
+			</if>
+			<if test="requisitionnumber != null">
+				requisitionNumber,
+			</if>
+			<if test="inventorylocationid != null">
+				inventoryLocationID,
+			</if>
+			<if test="categoryid != null">
+				categoryID,
+			</if>
+			<if test="pickingid != null">
+				pickingID,
+			</if>
+			<if test="state != null">
+				state,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+			<if test="lastprocessingtime != null">
+				lastProcessingTime,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="materiallibraryid != null">
+				#{materiallibraryid,jdbcType=INTEGER},
+			</if>
+			<if test="requisitionnumber != null">
+				#{requisitionnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="inventorylocationid != null">
+				#{inventorylocationid,jdbcType=INTEGER},
+			</if>
+			<if test="categoryid != null">
+				#{categoryid,jdbcType=INTEGER},
+			</if>
+			<if test="pickingid != null">
+				#{pickingid,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				#{state,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastprocessingtime != null">
+				#{lastprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				#{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.MaterialLibraryID">
+		update materiallibraryid
+		<set>
+			<if test="requisitionnumber != null">
+				requisitionNumber = #{requisitionnumber,jdbcType=VARCHAR},
+			</if>
+			<if test="inventorylocationid != null">
+				inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER},
+			</if>
+			<if test="categoryid != null">
+				categoryID = #{categoryid,jdbcType=INTEGER},
+			</if>
+			<if test="pickingid != null">
+				pickingID = #{pickingid,jdbcType=INTEGER},
+			</if>
+			<if test="state != null">
+				state = #{state,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastprocessingtime != null">
+				lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where materialLibraryID = #{materiallibraryid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.MaterialLibraryID">
+		update materiallibraryid
+		set requisitionNumber = #{requisitionnumber,jdbcType=VARCHAR},
+		inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER},
+		categoryID = #{categoryid,jdbcType=INTEGER},
+		pickingID = #{pickingid,jdbcType=INTEGER},
+		state = #{state,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		createDate = #{createdate,jdbcType=TIMESTAMP},
+		lastProcessingTime = #{lastprocessingtime,jdbcType=TIMESTAMP},
+		createPersonID = #{createpersonid,jdbcType=INTEGER},
+		lastPersonID = #{lastpersonid,jdbcType=INTEGER}
+		where materialLibraryID = #{materiallibraryid,jdbcType=INTEGER}
+	</update>
+</mapper>

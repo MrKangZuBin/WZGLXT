@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ReturnRequestMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.ReturnRequest">
+		<id column="returnRequestID" property="returnrequestid" jdbcType="INTEGER" />
+		<result column="applicationNo" property="applicationno"
+			jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="submitterID" property="submitterid" jdbcType="INTEGER" />
+		<result column="commitTime" property="committime" jdbcType="TIMESTAMP" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="returnPolicy" property="returnpolicy" jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastModifiedID" property="lastmodifiedid"
+			jdbcType="INTEGER" />
+		<result column="lastModifiedTime" property="lastmodifiedtime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		returnRequestID, applicationNo, status, submitterID,
+		commitTime, companyID,
+		returnPolicy,
+		remarks, createPersonID,
+		createDate, lastModifiedID, lastModifiedTime
+	</sql>
+	<select id="selectObject" parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT returnRequestID FROM returnrequest where applicationNo=#{applicationno}
+	</select>
+	<select id="waitMePlay" resultType="java.lang.Integer" parameterType="map">
+		select count(*) from returnrequest where submitterID=#{id} AND `status`='未提交'
+	</select>
+	<select id="played" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from returnrequest where submitterID=#{id} AND `status`='已提交'
+	</select>
+	<select id="MyDJ" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from returnrequest where submitterID=#{id}
+	</select>
+	<select id="notgMyDJ" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+		select count(*) from returnrequest where submitterID=#{id} and `status`='审核失败'
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from returnrequest
+		where returnRequestID =
+		#{returnrequestid,jdbcType=INTEGER}
+	</select>
+	<!-- 退货申请:查询 -->
+	<select id="selectRequest" resultType="com.kang.pojo.RequestPojo" parameterType="map">
+	SELECT
+		f.returnRequestID,f.applicationNo,f.status,f.commitTime,f.returnPolicy,f.materialMaterial,f.commitName,
+		count(*) AS pNumber
+	FROM(SELECT
+			r.returnRequestID,r.applicationNo,r.status,r.commitTime,
+			r.returnPolicy,
+			i.materialMaterial,
+		(SELECT
+			loginname
+		FROM
+			user
+		WHERE
+			userID = r.submitterID) AS commitName
+		FROM
+			returnrequest r,returnrequest_iteminformation rf,inteminformation i
+		WHERE
+			1 = 1
+			AND r.returnRequestID=rf.returnRequestID
+			AND rf.itemInformationID = i.intemInformationID) f
+		WHERE 1=1
+		<if test="applicationNo !=null and applicationNo !='' ">
+			AND f.applicationNo like '%${applicationNo}%'
+		</if>
+		<if test="returnPolicy !=null and returnPolicy !='' ">
+			AND f.returnPolicy like '%${returnPolicy}%'
+		</if>
+		<if test="createDate !=null and createDate !='' ">
+			AND f.commitTime &gt; #{createDate} 
+		</if>
+		<if test="lastModifiedTime !=null and lastModifiedTime !='' ">
+			AND f.commitTime &lt; #{lastModifiedTime}
+		</if>
+		<if test="commitName !=null and commitName !='' ">
+			AND f.commitName=#{commitName}
+		</if>
+		<if test="status !=null and status !='' ">
+			AND f.status=#{status}
+		</if>
+		<if test="materialMaterial !=null and materialMaterial !='' ">
+			AND f.materialMaterial=#{materialMaterial}
+		</if>
+		GROUP BY f.returnRequestID
+		<if test="mincount>=0">
+			 limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<!-- 查询详情 -->
+	<select id="selectX" resultType="com.kang.pojo.RequestPojo" parameterType="map">
+	SELECT
+			r.returnRequestID,r.applicationNo,r.status,r.commitTime,r.createDate,r.lastModifiedTime,
+			r.returnPolicy,rf.number,
+			i.materialMaterial,i.itemCode,i.articleBarCode,i.chineseName,i.purchaseSpecifications,i.purchasingUnit,
+		(SELECT
+			loginname
+		FROM
+			user
+		WHERE
+			userID = r.submitterID) AS commitName,
+		(SELECT
+			loginname
+		FROM
+			user
+		WHERE
+			userID = r.createPersonID) AS createName,
+		(SELECT
+			loginname
+		FROM
+			user
+		WHERE
+			userID = r.lastModifiedID) AS lastUpdateName,
+		(SELECT
+			w.warehouseName
+		FROM
+			warehousemanagement w
+		WHERE
+			w.warehouseManagementID = r.warehouseManagementID) AS warehouseName
+		FROM
+			returnrequest r,returnrequest_iteminformation rf,inteminformation i
+		WHERE
+			1 = 1
+			AND r.returnRequestID=rf.returnRequestID
+			AND rf.itemInformationID = i.intemInformationID
+			<if test="returnRequestID!=null and returnRequestID!='' ">
+				AND r.returnRequestID=#{returnRequestID}
+			</if>
+			<if test="itemType!=null and itemType!='' ">
+				AND i.materialMaterial=#{itemType}
+			</if>
+	</select>
+	<!-- 退货申请:查询总条数 -->
+	<select id="selectCount" resultType="java.lang.Integer"  parameterType="map">
+		select count(*) from(SELECT
+			f.returnRequestID,f.applicationNo,f.status,f.commitTime,f.returnPolicy,f.materialMaterial,f.commitName,
+			count(*) AS pNumber
+		FROM(SELECT
+			r.returnRequestID,r.applicationNo,r.status,r.commitTime,
+			r.returnPolicy,
+			i.materialMaterial,
+		(SELECT
+			loginname
+		FROM
+			user
+		WHERE
+			userID = r.submitterID) AS commitName
+		FROM
+			returnrequest r,returnrequest_iteminformation rf,inteminformation i
+		WHERE
+			1 = 1
+			AND r.returnRequestID=rf.returnRequestID
+			AND rf.itemInformationID = i.intemInformationID)f
+		WHERE 1=1
+		<if test="applicationNo !=null and applicationNo !='' ">
+			AND f.applicationNo like '%${applicationNo}%'
+		</if>
+		<if test="returnPolicy !=null and returnPolicy !='' ">
+			AND f.returnPolicy like '%${returnPolicy}%'
+		</if>
+		<if test="createDate !=null and createDate !='' ">
+			AND f.commitTime &gt; #{createDate} 
+		</if>
+		<if test="lastModifiedTime !=null and lastModifiedTime !='' ">
+			AND f.commitTime &lt; #{lastModifiedTime}
+		</if>
+		<if test="commitName !=null and commitName !='' ">
+			AND f.commitName=#{commitName}
+		</if>
+		<if test="status !=null and status !='' ">
+			AND f.status=#{status}
+		</if>
+		<if test="materialMaterial !=null and materialMaterial !='' ">
+			AND f.materialMaterial=#{materialMaterial}
+		</if>
+		GROUP BY f.returnRequestID)f1  
+	</select>
+	<!-- 退货申请:查询总条数 -->
+	<select id="selectRequestCount" resultType="java.lang.Integer">
+		select count(*) from(SELECT
+			f.returnRequestID,f.applicationNo,f.status,f.commitTime,f.returnPolicy,f.materialMaterial,f.commitName,
+			count(*) AS pNumber
+		FROM(SELECT
+			r.returnRequestID,r.applicationNo,r.status,r.commitTime,
+			r.returnPolicy,
+			i.materialMaterial,
+		(SELECT
+			loginname
+		FROM
+			user
+		WHERE
+			userID = r.submitterID) AS commitName
+		FROM
+			returnrequest r,returnrequest_iteminformation rf,inteminformation i
+		WHERE
+			1 = 1
+			AND r.returnRequestID=rf.returnRequestID
+			AND rf.itemInformationID = i.intemInformationID)f
+			GROUP BY f.returnRequestID)f1  
+	</select>
+	<!-- 待采购物资查询 -->
+	<select id="selectDcg" resultType="com.kang.pojo.DcgPojo" parameterType="map">
+	SELECT
+		f.applicationNo,f.warehouseName,
+		f.itemCode,
+		f.chineseName,
+		f.number,f.purchasingUnit,f.purchaseSpecifications,
+		f.category,f.materialMaterial,f.createDate,f.commitName,f.organizationName,
+		f.explains,
+		count(*) AS pNumber,f.status
+	FROM(SELECT
+			p.purchaseRequisitionID,
+			p.applicationNo,
+			p.explains,p.createDate,p.status,
+			i.materialMaterial,i.category,
+			i.itemCode,i.chineseName,i.articleBarCode,i.purchaseSpecifications,
+			i.purchasingUnit,i.currentStock,
+			ps.number,
+		(SELECT
+			loginname
+			FROM
+				user
+			WHERE
+				userID = p.lastPersonID) AS commitName,
+		(select w.warehouseName from warehousemanagement w WHERE w.warehouseManagementID=p.warehouseManagementID)as warehouseName,
+		(SELECT
+			o.organizationName
+			FROM
+				organization o
+			WHERE
+				o.organizationID = p.deptID) AS organizationName
+			FROM
+				inteminformation i,
+				purchaserequisition p,
+				purchaserequisition_iteminformation ps
+			WHERE
+				1 = 1
+				AND p.purchaseRequisitionID = ps.purchaseRequisitionID
+				AND ps.itemInformationID = i.intemInformationID) f 
+		WHERE 1=1
+		<if test="applicationNo!=null and applicationNo!='' ">
+			AND f.applicationNo like '%${applicationNo}%'
+		</if>
+		<if test="createdate!=null and createdate!='' ">
+			AND f.createDate &gt; #{createdate}
+		 </if>
+		<if test="lastDate!=null and lastDate!='' ">
+			AND f.createDate &lt; #{lastDate}
+		</if>
+		<if test="commitName!=null and commitName!='' ">
+			AND f.commitName=#{commitName}
+		</if>
+		<if test="organizationName!=null and organizationName!='' ">
+			AND f.organizationName=#{organizationName}
+		</if>
+		<if test="explians!=null and explians!='' ">
+			AND f.explains like '%${explians}%'
+	   	</if>
+		<if test="materialMaterial!=null and materialMaterial!='' ">
+			AND f.materialMaterial=#{materialMaterial}
+		</if>
+		AND f.status='已提交' GROUP BY f.applicationNo
+		<if test="mincount>=0">
+			 limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selDcgCount" resultType="java.lang.Integer">
+	select count(*) from(	
+		SELECT
+		f.applicationNo,
+		f.itemCode,
+		f.chineseName,
+		f.number,f.purchasingUnit,f.purchaseSpecifications,
+		f.category,f.materialMaterial,f.createDate,f.commitName,
+		f.explains,
+		count(*) AS pNumber,
+		f.status
+	FROM(SELECT
+			p.purchaseRequisitionID,
+			p.applicationNo,p.status,
+			p.explains,p.createDate,
+			i.materialMaterial,i.category,
+			i.itemCode,i.chineseName,i.articleBarCode,i.purchaseSpecifications,
+			i.purchasingUnit,i.currentStock,
+			ps.number,
+		(SELECT
+			loginname
+			FROM
+				user
+			WHERE
+				userID = p.lastPersonID) AS commitName,
+		(SELECT
+			o.organizationName
+			FROM
+				organization o
+			WHERE
+				o.organizationID = p.deptID) AS organizationName
+			FROM
+				inteminformation i,
+				purchaserequisition p,
+				purchaserequisition_iteminformation ps
+			WHERE
+				1 = 1
+				AND p.purchaseRequisitionID = ps.purchaseRequisitionID
+				AND ps.itemInformationID = i.intemInformationID) f 
+				WHERE 1=1 AND f.status='已提交' GROUP BY f.applicationNo)f1
+	</select>
+	<!-- 待采购物资查询总条数 -->
+	<select id="selectDcgCount" resultType="java.lang.Integer" parameterType="map">
+	select count(*) from(	
+		SELECT
+		f.applicationNo,f.warehouseName,
+		f.itemCode,
+		f.chineseName,
+		f.number,f.purchasingUnit,f.purchaseSpecifications,
+		f.category,f.materialMaterial,f.createDate,f.commitName,
+		f.explains,
+		count(*) AS pNumber,f.status
+	FROM(SELECT
+			p.purchaseRequisitionID,
+			p.applicationNo,
+			p.explains,p.createDate,p.status,
+			i.materialMaterial,i.category,
+			i.itemCode,i.chineseName,i.articleBarCode,i.purchaseSpecifications,
+			i.purchasingUnit,i.currentStock,
+			ps.number,
+		(SELECT
+			loginname
+			FROM
+				user
+			WHERE
+				userID = p.lastPersonID) AS commitName,
+		(select w.warehouseName from warehousemanagement w WHERE w.warehouseManagementID=p.warehouseManagementID)as warehouseName,
+		(SELECT
+			o.organizationName
+			FROM
+				organization o
+			WHERE
+				o.organizationID = p.deptID) AS organizationName
+			FROM
+				inteminformation i,
+				purchaserequisition p,
+				purchaserequisition_iteminformation ps
+			WHERE
+				1 = 1
+				AND p.purchaseRequisitionID = ps.purchaseRequisitionID
+				AND ps.itemInformationID = i.intemInformationID) f 
+		WHERE 1=1
+		<if test="applicationNo!=null and applicationNo!='' ">
+			AND f.applicationNo like '%${applicationNo}%'
+		</if>
+		<if test="createdate!=null and createdate!='' ">
+			AND f.createDate &gt; #{createdate}
+		 </if>
+		<if test="lastDate!=null and lastDate!='' ">
+			AND  f.createDate &lt; #{lastDate}
+		</if>
+		<if test="commitName!=null and commitName!='' ">
+			AND f.commitName=#{commitName}
+		</if>
+		<if test="organizationName!=null and organizationName!='' ">
+			AND f.organizationName=#{organizationName}
+		</if>
+		<if test="explians!=null and explians!='' ">
+			AND f.explains like '%${explians}%'
+	   	</if>
+		<if test="materialMaterial!=null and materialMaterial!='' ">
+			AND f.materialMaterial=#{materialMaterial}
+		</if>
+		AND f.status='已提交' GROUP BY f.applicationNo)f1
+	</select>
+	<!-- 查询退货申请表全部数据 -->
+	<select id="selectallReturnRequest" parameterType="map"
+		resultMap="BaseResultMap">
+		select returnrequestid,committime,companyid,submitterid
+		from returnrequest where status='审核成功' ORDER BY committime desc 
+	</select>
+	<!-- 查询退货申请表的总条数 -->
+	<select id="selectcountReturnRequest" resultType="int">
+		select count(*)
+		from returnrequest where status='审核成功'
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		returnrequest
+		where returnRequestID =
+		#{returnrequestid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.ReturnRequest">
+		insert into returnrequest
+		(returnRequestID, applicationNo, status,
+		submitterID, commitTime,
+		companyID,
+		returnPolicy, remarks, createPersonID,
+		createDate,
+		lastModifiedID, lastModifiedTime
+		)
+		values
+		(#{returnrequestid,jdbcType=INTEGER},
+		#{applicationno,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+		#{submitterid,jdbcType=INTEGER}, #{committime,jdbcType=TIMESTAMP},
+		#{companyid,jdbcType=INTEGER},
+		#{returnpolicy,jdbcType=VARCHAR},
+		#{remarks,jdbcType=VARCHAR}, #{createpersonid,jdbcType=INTEGER},
+		#{createdate,jdbcType=TIMESTAMP}, #{lastmodifiedid,jdbcType=INTEGER},
+		#{lastmodifiedtime,jdbcType=TIMESTAMP}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.ReturnRequest">
+		insert into returnrequest(applicationNo,status,submitterID,
+			commitTime,returnPolicy,remarks,createPersonID,createDate,lastModifiedID,
+			lastModifiedTime)values(
+			<if test="applicationno != null">
+				#{applicationno,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="submitterid != null">
+				#{submitterid,jdbcType=INTEGER},
+			</if>
+			<if test="committime != null">
+				#{committime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="returnpolicy != null">
+				#{returnpolicy,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				#{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastmodifiedid != null">
+				#{lastmodifiedid,jdbcType=INTEGER},
+			</if>
+			<if test="lastmodifiedtime != null">
+				#{lastmodifiedtime,jdbcType=TIMESTAMP}
+			</if>
+		)
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.ReturnRequest">
+		update returnrequest
+		<set>
+			<if test="applicationno != null">
+				applicationNo = #{applicationno,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="submitterid != null">
+				submitterID = #{submitterid,jdbcType=INTEGER},
+			</if>
+			<if test="committime != null">
+				commitTime = #{committime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="companyid != null">
+				companyID = #{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="returnpolicy != null">
+				returnPolicy = #{returnpolicy,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				remarks = #{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastmodifiedid != null">
+				lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+			</if>
+			<if test="lastmodifiedtime != null">
+				lastModifiedTime =
+				#{lastmodifiedtime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where returnRequestID = #{returnrequestid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="java.lang.Integer">
+		update returnrequest
+		set status='待提交' where returnrequestid=#{returnRequestID}
+	</update>
+	<update id="subByPrimaryKey" parameterType="java.lang.Integer">
+		update returnrequest
+		set status='已提交' where returnrequestid=#{returnRequestID}
+	</update>
+</mapper>

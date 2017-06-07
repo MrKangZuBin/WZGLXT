@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.WarehouseManagementMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.WarehouseManagement">
+		<id column="warehouseManagementID" property="warehousemanagementid"
+			jdbcType="INTEGER" />
+		<result column="warehouseCode" property="warehousecode"
+			jdbcType="VARCHAR" />
+		<result column="warehouseName" property="warehousename"
+			jdbcType="VARCHAR" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="telephone" property="telephone" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="userWHMap" type="com.kang.pojo.WarehouseUser">
+		<id column="warehouseManagementID" property="warehousemanagementid"
+			jdbcType="INTEGER" />
+		<result column="warehouseCode" property="warehousecode"
+			jdbcType="VARCHAR" />
+		<result column="warehouseName" property="warehousename"
+			jdbcType="VARCHAR" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="telephone" property="telephone" jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="loginName" property="createpersonname"
+			jdbcType="VARCHAR" />
+	</resultMap>
+
+	<select id="findPagingList" resultMap="userWHMap"
+		parameterType="map">
+		select w.*, u.loginName  from
+		warehousemanagement w, user u 
+		<where>
+			and w.createPersonID = u.userID
+			<if test="warehousecode != null and warehousecode != ''">
+				and warehousecode like '%${warehousecode }%'
+			</if>
+			<if test="warehousename != null and warehousename != ''">
+				and warehousename like '%${warehousename }%'
+			</if>
+			<if test="status != null and status != ''">
+				and w.status = #{status }
+			</if>
+		</where>
+		limit #{currpage } , #{pagecount}
+		<!-- order by createTime -->
+	</select>
+	<select id="selrow" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from warehousemanagement
+		<where>
+			<if test="warehousecode != null and warehousecode != ''">
+				and warehousecode like '%${warehousecode }%'
+			</if>
+			<if test="warehousename != null and warehousename != ''">
+				and warehousename like '%${warehousename }%'
+			</if>
+			<if test="status != null and status != ''">
+				and status = #{status }
+			</if>
+		</where>
+	</select>
+
+	<sql id="Base_Column_List">
+		warehouseManagementID, warehouseCode, warehouseName,
+		companyID, status, telephone,
+		address, remarks, createDate,
+		createPersonID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select warehousemanagementid,warehousename
+		<include refid="Base_Column_List" />
+		from warehousemanagement
+		where warehouseManagementID =
+		#{warehousemanagementid,jdbcType=INTEGER}
+	</select>
+
+	<!-- 查询仓库名称 -->
+	<select id="selectall" resultMap="BaseResultMap">
+		select warehousename from warehousemanagement
+	</select>
+	<!-- 根据名字查id -->
+	<select id="selbyid" parameterType="map" resultMap="BaseResultMap">
+		select warehouseManagementID from warehousemanagement
+		<where>
+			<if test="warehousename!=null and warehousename!='' ">
+				warehouseName=#{warehousename}
+			</if>
+		</where>
+	</select>
+	<!-- 库存报损-简单查询 -->
+	<select id="selectbaosunone" resultMap="BaseResultMap">
+		select
+		warehousemanagementid,warehousename
+		from warehousemanagement
+	</select>
+
+	<!-- 库存报损-根据仓库id查询数据 -->
+	<select id="selectbaosunById" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select warehousemanagementid,warehousename
+		<include refid="Base_Column_List" />
+		from warehousemanagement
+		where warehouseManagementID =
+		#{warehousemanagementid,jdbcType=INTEGER}
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		warehousemanagement
+		where warehouseManagementID =
+		#{warehousemanagementid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.WarehouseManagement">
+		insert into
+		warehousemanagement (warehouseManagementID, warehouseCode,
+		warehouseName, companyID, status,
+		telephone, address, remarks,
+		createDate, createPersonID)
+		values
+		(#{warehousemanagementid,jdbcType=INTEGER},
+		#{warehousecode,jdbcType=VARCHAR},
+		#{warehousename,jdbcType=VARCHAR},
+		#{companyid,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR},
+		#{telephone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+		#{remarks,jdbcType=VARCHAR},
+		#{createdate,jdbcType=TIMESTAMP},
+		#{createpersonid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.WarehouseManagement">
+		insert into warehousemanagement
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="warehousemanagementid != null">
+				warehouseManagementID,
+			</if>
+			<if test="warehousecode != null">
+				warehouseCode,
+			</if>
+			<if test="warehousename != null">
+				warehouseName,
+			</if>
+			<if test="companyid != null">
+				companyID,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="telephone != null">
+				telephone,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="remarks != null">
+				remarks,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="warehousemanagementid != null">
+				#{warehousemanagementid,jdbcType=INTEGER},
+			</if>
+			<if test="warehousecode != null">
+				#{warehousecode,jdbcType=VARCHAR},
+			</if>
+			<if test="warehousename != null">
+				#{warehousename,jdbcType=VARCHAR},
+			</if>
+			<if test="companyid != null">
+				#{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				#{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				#{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.WarehouseManagement">
+		update warehousemanagement
+		<set>
+			<if test="warehousecode != null">
+				warehouseCode = #{warehousecode,jdbcType=VARCHAR},
+			</if>
+			<if test="warehousename != null">
+				warehouseName = #{warehousename,jdbcType=VARCHAR},
+			</if>
+			<if test="companyid != null">
+				companyID = #{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				telephone = #{telephone,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				remarks = #{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where warehouseManagementID =
+		#{warehousemanagementid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.WarehouseManagement">
+		update
+		warehousemanagement
+		set warehouseCode =
+		#{warehousecode,jdbcType=VARCHAR},
+		warehouseName =
+		#{warehousename,jdbcType=VARCHAR},
+		companyID =
+		#{companyid,jdbcType=INTEGER},
+		status = #{status,jdbcType=VARCHAR},
+		telephone = #{telephone,jdbcType=VARCHAR},
+		address =
+		#{address,jdbcType=VARCHAR},
+		remarks = #{remarks,jdbcType=VARCHAR},
+		createDate = #{createdate,jdbcType=TIMESTAMP},
+		createPersonID =
+		#{createpersonid,jdbcType=INTEGER}
+		where warehouseManagementID =
+		#{warehousemanagementid,jdbcType=INTEGER}
+	</update>
+</mapper>

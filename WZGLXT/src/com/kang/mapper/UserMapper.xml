@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.UserMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.User">
+		<id column="userID" property="userid" jdbcType="INTEGER" />
+		<result column="loginName" property="loginname" jdbcType="VARCHAR" />
+		<result column="password" property="password" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<select id="selUserID" parameterType="map" resultMap="BaseResultMap">
+		select userID from user where loginname=#{commitName,jdbcType=VARCHAR}
+	</select>
+	<select id="selUser" parameterType="map" resultMap="BaseResultMap">
+		select
+		loginName,password,userID from user where loginname=#{userName} and
+		password=#{password}
+	</select>
+	<sql id="Base_Column_List">
+		userID, loginName, password, status, createDate
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from user
+		where userID = #{userid,jdbcType=INTEGER}
+	</select>
+	<!-- 根据id得到名字 -->
+	<select id="selectgetname" resultMap="BaseResultMap">
+		select userID,loginName
+		from user
+	</select>
+	<!-- 退货申请:查询创建人 -->
+	<select id="selCName" resultType="java.lang.String"
+		parameterType="java.lang.Integer">
+		select loginName from user where userID=#{id}
+	</select>
+	<!-- 退货申请:查询提交人 -->
+	<select id="selTName" resultType="java.lang.String"
+		parameterType="java.lang.Integer">
+		select loginName from user where userID=#{id}
+	</select>
+	<!-- 退货申请:查询最后修改人 -->
+	<select id="selUpName" resultType="java.lang.String"
+		parameterType="java.lang.Integer">
+		select loginName from user where userID=#{id}
+	</select>
+	<!-- 根据下拉框选的名字查询 -->
+	<select id="selectUserName" resultType="User" parameterType="java.lang.String">
+		select
+		u.userid,u.loginname,p.lastPersonID,p.applicationNo,p.explains,p.status,p.lastProcessingTime
+		FROM user u,purchaserequisition p WHERE 1=1
+		<if test="_parameter !=null and _parameter !='' ">
+			AND u.loginName=#{purname}
+		</if>
+	</select>
+	<select id="selpurName" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select userID,loginName from user
+		<where>
+			<if test="_parameter !=null and _parameter !='' ">
+				loginname=#{postName}
+			</if>
+		</where>
+	</select>
+
+	<select id="selstcUser" parameterType="map" resultType="com.kang.pojo.RoleUser">
+		select 
+		u.userid,
+		u.loginname,
+		u.status,
+		r.roleid,
+		r.rolename
+		from 
+		user u,
+		role r,
+		user_role ur
+		where 1=1
+		and 
+		u.userid=ur.userid
+		and
+		r.roleid=ur.roleid
+		
+		<if test="loginname !=null and loginname !='' ">
+			and u.loginname like '%${loginname}%'
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY u.createDate desc limit
+			#{mincount},#{maxcount}
+		</if>
+	</select>
+	
+	<select id="selstcUsercount" parameterType="map" resultType="java.lang.Integer">
+		select 
+		count(*)
+		from 
+		user u,
+		role r,
+		user_role ur
+		where 1=1
+		and 
+		u.userid=ur.userid
+		and
+		r.roleid=ur.roleid
+		<if test="loginname !=null and loginname !='' ">
+			and u.loginname like '%${loginname}%'
+		</if>
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from user
+		where userID = #{userid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.User">
+		insert into user (userID,
+		loginName, password,
+		status, createDate)
+		values
+		(#{userid,jdbcType=INTEGER}, #{loginname,jdbcType=VARCHAR},
+		#{password,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{createdate,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.User">
+		insert into user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="userid != null">
+				userID,
+			</if>
+			<if test="loginname != null">
+				loginName,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="userid != null">
+				#{userid,jdbcType=INTEGER},
+			</if>
+			<if test="loginname != null">
+				#{loginname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.User">
+		update user
+		<set>
+			<if test="loginname != null">
+				loginName = #{loginname,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where userID = #{userid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.User">
+		update user
+		set
+		loginName = #{loginname,jdbcType=VARCHAR},
+		password =
+		#{password,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		createDate = #{createdate,jdbcType=TIMESTAMP}
+		where userID =
+		#{userid,jdbcType=INTEGER}
+	</update>
+</mapper>

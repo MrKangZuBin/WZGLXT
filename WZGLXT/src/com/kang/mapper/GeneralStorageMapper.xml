@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.GeneralStorageMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.GeneralStorage">
+		<id column="generalStorageID" property="generalstorageid" jdbcType="INTEGER" />
+		<result column="warehouseNumber" property="warehousenumber"
+			jdbcType="VARCHAR" />
+		<result column="purchaserID" property="purchaserid" jdbcType="INTEGER" />
+		<result column="warehouseID" property="warehouseid" jdbcType="INTEGER" />
+		<result column="storageInstructions" property="storageinstructions"
+			jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastModifiedID" property="lastmodifiedid"
+			jdbcType="INTEGER" />
+		<result column="lastModifiedTime" property="lastmodifiedtime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		generalStorageID, warehouseNumber, purchaserID,
+		warehouseID, storageInstructions,
+		remarks, createPersonID, createDate,
+		lastModifiedID, lastModifiedTime
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from generalstorage
+		where generalStorageID =
+		#{generalstorageid,jdbcType=INTEGER}
+	</select>
+
+	<!-- 查询信息-分页 -->
+	<select id="selectGeneralStorage" resultMap="BaseResultMap" parameterType="map">
+		select generalstorageid,warehousenumber,purchaserid,warehouseid,storageinstructions,createpersonid,createdate
+		from generalstorage ORDER BY createdate
+		desc limit #{mincount},#{maxcount}
+	</select>
+	
+	<!-- 查詢总页数 -->
+	<select id="countGeneralStorage" resultType="int">
+		select count(*) from generalstorage
+	</select>
+	
+	<!-- 根据number,查询id -->
+	<select id="selectoneid" parameterType="java.lang.String" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from generalstorage
+		where warehousenumber =
+		#{warehousenumber}
+	</select>
+	
+	<!-- 根据主键id查询数据 -->
+	<select id="selectByGeneralStorage" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from generalstorage
+		where generalStorageID =
+		#{generalstorageid,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 查询功能 -->
+	<select id="selectByWheres" resultType="com.kang.pojo.GgeneralStoragePoJo" parameterType="map">
+SELECT
+	g.generalstorageid,
+	g.warehousenumber,
+	g.storageinstructions,
+	war.warehousename,
+	gi.storagequantity,
+	iif.materialmaterial,
+	g.lastmodifiedtime,
+	g.lastmodifiedid
+FROM
+	generalstorage g,
+	generalstorage_iteminformation gi,
+	inteminformation iif,
+	warehousemanagement_iteminformation wf,
+	warehousemanagement war
+	
+WHERE 1=1
+	AND 
+	g.generalstorageid=gi.generalstorageid
+	AND
+	gi.iteminformationid=iif.inteminformationid
+	AND
+	war.warehouseManagementID=wf.warehouseManagementID
+	AND
+	wf.itemInformationid=iif.intemInformationid
+	<if test="warehousenumber !=null and warehousenumber!='' ">
+		AND g.warehousenumber like'%${warehousenumber}%'
+	</if>
+	<if test="createtime !=null and createtime !='' ">
+		AND g.lastmodifiedtime &gt; #{createtime}
+	</if>
+	<if test="finalprocessingtime !=null and finalprocessingtime !='' ">
+		AND g.lastmodifiedtime &lt; #{finalprocessingtime}
+	</if>
+	<if test="lastpersonid !=null and lastpersonid !='' ">
+		AND g.lastmodifiedid=#{lastpersonid}
+	</if>
+	<if test="warehousemanagementid !=null and warehousemanagementid !='' ">
+		AND war.warehouseName like'%${warehousenumber}%'
+	</if>
+	<if test="company !=null and company !='' ">
+		AND g.storageinstructions like'%${company}%'
+	</if>
+	<if test="materialmaterial !=null and materialmaterial !='' ">
+		AND iif.materialmaterial=#{materialmaterial}
+	</if>
+	<if test="mincount >=0 ">
+		ORDER BY g.lastmodifiedtime desc limit #{mincount},#{maxcount}
+	</if>
+  </select>
+  
+  <select id="selectByWherescount" resultType="java.lang.Integer" parameterType="map">
+SELECT
+	count(*)
+FROM
+	generalstorage g,
+	generalstorage_iteminformation gi,
+	inteminformation iif,
+	warehousemanagement_iteminformation wf,
+	warehousemanagement war
+	
+WHERE 1=1
+	AND 
+	g.generalstorageid=gi.generalstorageid
+	AND
+	gi.iteminformationid=iif.inteminformationid
+	AND
+	war.warehouseManagementID=wf.warehouseManagementID
+	AND
+	wf.itemInformationid=iif.intemInformationid
+	<if test="warehousenumber !=null and warehousenumber!='' ">
+		AND g.warehousenumber like'%${warehousenumber}%'
+	</if>
+	<if test="createtime !=null and createtime !='' ">
+		AND g.lastmodifiedtime &gt; #{createtime}
+	</if>
+	<if test="finalprocessingtime !=null and finalprocessingtime !='' ">
+		AND g.lastmodifiedtime &lt; #{finalprocessingtime}
+	</if>
+	<if test="lastpersonid !=null and lastpersonid !='' ">
+		AND g.lastmodifiedid=#{lastpersonid}
+	</if>
+	<if test="warehousemanagementid !=null and warehousemanagementid !='' ">
+		AND war.warehouseName like'%${warehousenumber}%'
+	</if>
+	<if test="company !=null and company !='' ">
+		AND g.storageinstructions like'%${company}%'
+	</if>
+	<if test="materialmaterial !=null and materialmaterial !='' ">
+		AND iif.materialmaterial=#{materialmaterial}
+	</if>
+  </select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		generalstorage
+		where generalStorageID =
+		#{generalstorageid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.GeneralStorage">
+		insert into generalstorage
+		(generalStorageID, warehouseNumber,
+		purchaserID, warehouseID,
+		storageInstructions,
+		remarks, createPersonID, createDate,
+		lastModifiedID, lastModifiedTime)
+		values
+		(#{generalstorageid,jdbcType=INTEGER},
+		#{warehousenumber,jdbcType=VARCHAR},
+		#{purchaserid,jdbcType=INTEGER},
+		#{warehouseid,jdbcType=INTEGER},
+		#{storageinstructions,jdbcType=VARCHAR},
+		#{remarks,jdbcType=VARCHAR},
+		#{createpersonid,jdbcType=INTEGER}, #{createdate,jdbcType=TIMESTAMP},
+		#{lastmodifiedid,jdbcType=INTEGER},
+		#{lastmodifiedtime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.GeneralStorage">
+		insert into generalstorage
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="generalstorageid != null">
+				generalStorageID,
+			</if>
+			<if test="warehousenumber != null">
+				warehouseNumber,
+			</if>
+			<if test="purchaserid != null">
+				purchaserID,
+			</if>
+			<if test="warehouseid != null">
+				warehouseID,
+			</if>
+			<if test="storageinstructions != null">
+				storageInstructions,
+			</if>
+			<if test="remarks != null">
+				remarks,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+			<if test="lastmodifiedid != null">
+				lastModifiedID,
+			</if>
+			<if test="lastmodifiedtime != null">
+				lastModifiedTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="generalstorageid != null">
+				#{generalstorageid,jdbcType=INTEGER},
+			</if>
+			<if test="warehousenumber != null">
+				#{warehousenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="purchaserid != null">
+				#{purchaserid,jdbcType=INTEGER},
+			</if>
+			<if test="warehouseid != null">
+				#{warehouseid,jdbcType=INTEGER},
+			</if>
+			<if test="storageinstructions != null">
+				#{storageinstructions,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				#{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastmodifiedid != null">
+				#{lastmodifiedid,jdbcType=INTEGER},
+			</if>
+			<if test="lastmodifiedtime != null">
+				#{lastmodifiedtime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.GeneralStorage">
+		update generalstorage
+		<set>
+			<if test="warehousenumber != null">
+				warehouseNumber = #{warehousenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="purchaserid != null">
+				purchaserID = #{purchaserid,jdbcType=INTEGER},
+			</if>
+			<if test="warehouseid != null">
+				warehouseID = #{warehouseid,jdbcType=INTEGER},
+			</if>
+			<if test="storageinstructions != null">
+				storageInstructions =
+				#{storageinstructions,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				remarks = #{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastmodifiedid != null">
+				lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+			</if>
+			<if test="lastmodifiedtime != null">
+				lastModifiedTime =
+				#{lastmodifiedtime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where generalStorageID = #{generalstorageid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.GeneralStorage">
+		update
+		generalstorage
+		set warehouseNumber =
+		#{warehousenumber,jdbcType=VARCHAR},
+		purchaserID =
+		#{purchaserid,jdbcType=INTEGER},
+		warehouseID =
+		#{warehouseid,jdbcType=INTEGER},
+		storageInstructions =
+		#{storageinstructions,jdbcType=VARCHAR},
+		remarks =
+		#{remarks,jdbcType=VARCHAR},
+		createPersonID =
+		#{createpersonid,jdbcType=INTEGER},
+		createDate =
+		#{createdate,jdbcType=TIMESTAMP},
+		lastModifiedID =
+		#{lastmodifiedid,jdbcType=INTEGER},
+		lastModifiedTime =
+		#{lastmodifiedtime,jdbcType=TIMESTAMP}
+		where generalStorageID =
+		#{generalstorageid,jdbcType=INTEGER}
+	</update>
+</mapper>

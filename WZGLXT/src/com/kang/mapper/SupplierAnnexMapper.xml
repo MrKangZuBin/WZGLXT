@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.SupplierAnnexMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.SupplierAnnex" >
+    <id column="supplierAnnexID" property="supplierannexid" jdbcType="INTEGER" />
+    <result column="supplierID" property="supplierid" jdbcType="INTEGER" />
+    <result column="annexName" property="annexname" jdbcType="VARCHAR" />
+    <result column="annexPath" property="annexpath" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="listById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from supplierannex
+    where supplierID = #{supplierid,jdbcType=INTEGER}
+  </select>
+  <sql id="Base_Column_List" >
+    supplierAnnexID, supplierID, annexName, annexPath
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from supplierannex
+    where supplierAnnexID = #{supplierannexid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from supplierannex
+    where supplierAnnexID = #{supplierannexid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.SupplierAnnex" >
+    insert into supplierannex (supplierAnnexID, supplierID, annexName, 
+      annexPath)
+    values (#{supplierannexid,jdbcType=INTEGER}, #{supplierid,jdbcType=INTEGER}, #{annexname,jdbcType=VARCHAR}, 
+      #{annexpath,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.SupplierAnnex" >
+    insert into supplierannex
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="supplierannexid != null" >
+        supplierAnnexID,
+      </if>
+      <if test="supplierid != null" >
+        supplierID,
+      </if>
+      <if test="annexname != null" >
+        annexName,
+      </if>
+      <if test="annexpath != null" >
+        annexPath,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="supplierannexid != null" >
+        #{supplierannexid,jdbcType=INTEGER},
+      </if>
+      <if test="supplierid != null" >
+        #{supplierid,jdbcType=INTEGER},
+      </if>
+      <if test="annexname != null" >
+        #{annexname,jdbcType=VARCHAR},
+      </if>
+      <if test="annexpath != null" >
+        #{annexpath,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.SupplierAnnex" >
+    update supplierannex
+    <set >
+      <if test="supplierid != null" >
+        supplierID = #{supplierid,jdbcType=INTEGER},
+      </if>
+      <if test="annexname != null" >
+        annexName = #{annexname,jdbcType=VARCHAR},
+      </if>
+      <if test="annexpath != null" >
+        annexPath = #{annexpath,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where supplierAnnexID = #{supplierannexid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.SupplierAnnex" >
+    update supplierannex
+    set supplierID = #{supplierid,jdbcType=INTEGER},
+      annexName = #{annexname,jdbcType=VARCHAR},
+      annexPath = #{annexpath,jdbcType=VARCHAR},
+    where supplierAnnexID = #{supplierannexid,jdbcType=INTEGER}
+  </update>
+</mapper>

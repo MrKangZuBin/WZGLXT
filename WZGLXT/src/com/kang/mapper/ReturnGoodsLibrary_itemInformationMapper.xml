@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ReturnGoodsLibrary_itemInformationMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.ReturnGoodsLibrary_itemInformation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="returnGoodsLibraryID" property="returngoodslibraryid" jdbcType="INTEGER" />
+    <result column="warehouseID" property="warehouseid" jdbcType="INTEGER" />
+    <result column="itemInformationID" property="iteminformationid" jdbcType="INTEGER" />
+    <result column="returnQuantity" property="returnquantity" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, returnGoodsLibraryID, warehouseID, itemInformationID, returnQuantity
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from returngoodslibrary_iteminformation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 根据退货出库表的id查询退货出库-物品表的数据 -->
+  <select id="selectByreturngoodslibraryid" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from returngoodslibrary_iteminformation
+    where returngoodslibraryid = #{returngoodslibraryid,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 查询退货出库-物品表的所有信息 -->
+  <select id="selectallReturnGoodsLibrary_itemInformation" resultMap="BaseResultMap" >
+     select 
+    <include refid="Base_Column_List" />
+    from returngoodslibrary_iteminformation
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from returngoodslibrary_iteminformation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.ReturnGoodsLibrary_itemInformation" >
+    insert into returngoodslibrary_iteminformation (id, returnGoodsLibraryID, warehouseID, 
+      itemInformationID, returnQuantity)
+    values (#{id,jdbcType=INTEGER}, #{returngoodslibraryid,jdbcType=INTEGER}, #{warehouseid,jdbcType=INTEGER}, 
+      #{iteminformationid,jdbcType=INTEGER}, #{returnquantity,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.ReturnGoodsLibrary_itemInformation" >
+    insert into returngoodslibrary_iteminformation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="returngoodslibraryid != null" >
+        returnGoodsLibraryID,
+      </if>
+      <if test="warehouseid != null" >
+        warehouseID,
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID,
+      </if>
+      <if test="returnquantity != null" >
+        returnQuantity,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="returngoodslibraryid != null" >
+        #{returngoodslibraryid,jdbcType=INTEGER},
+      </if>
+      <if test="warehouseid != null" >
+        #{warehouseid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="returnquantity != null" >
+        #{returnquantity,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.ReturnGoodsLibrary_itemInformation" >
+    update returngoodslibrary_iteminformation
+    <set >
+      <if test="returngoodslibraryid != null" >
+        returnGoodsLibraryID = #{returngoodslibraryid,jdbcType=INTEGER},
+      </if>
+      <if test="warehouseid != null" >
+        warehouseID = #{warehouseid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="returnquantity != null" >
+        returnQuantity = #{returnquantity,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.ReturnGoodsLibrary_itemInformation" >
+    update returngoodslibrary_iteminformation
+    set returnGoodsLibraryID = #{returngoodslibraryid,jdbcType=INTEGER},
+      warehouseID = #{warehouseid,jdbcType=INTEGER},
+      itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      returnQuantity = #{returnquantity,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

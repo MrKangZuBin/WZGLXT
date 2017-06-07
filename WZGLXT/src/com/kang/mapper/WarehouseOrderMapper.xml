@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.WarehouseOrderMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.WarehouseOrder">
+		<id column="purchaseOrdereID" property="purchaseordereid" jdbcType="INTEGER" />
+		<result column="warehouseNumber" property="warehousenumber"
+			jdbcType="VARCHAR" />
+		<result column="buyerID" property="buyerid" jdbcType="INTEGER" />
+		<result column="warehouseID" property="warehouseid" jdbcType="INTEGER" />
+		<result column="companyTelephone" property="companytelephone"
+			jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="supplierID" property="supplierid" jdbcType="INTEGER" />
+		<result column="company" property="company" jdbcType="VARCHAR" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="finalProcessingTime" property="finalprocessingtime"
+			jdbcType="DATE" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		purchaseOrdereID, warehouseNumber, buyerID, warehouseID,
+		companyTelephone, address,
+		supplierID, company, createTime,
+		finalProcessingTime, createPersonID,
+		lastPersonID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="int">
+		select
+		<include refid="Base_Column_List" />
+		from warehouseorder
+		where purchaseOrdereID = #{purchaseordereid}
+	</select>
+	<!-- 采购入库表数据查询分页 -->
+	<select id="selectWarehouseOrder" parameterType="map" resultMap="BaseResultMap">
+		select
+		purchaseordereid,warehousenumber,companytelephone,address,warehouseid,supplierid,company,createtime,createpersonid
+		from warehouseorder ORDER BY createTime
+		desc limit
+		#{mincount},#{maxcount}
+	</select>
+
+	<!-- 根据单号查询id -->
+	<select id="selectoneid" parameterType="String" resultMap="BaseResultMap">
+		select purchaseordereid from warehouseorder where warehouseNumber =
+		#{warehousenumber}
+	</select>
+	<!-- 采购入库按条件查询 -->
+	<select id="selectByWhere" resultMap="BaseResultMap"
+		parameterType="map">
+
+	</select>
+
+	<!-- 查询入库表数据总条数 -->
+	<select id="selectcountWarehouseOrder" resultType="int">
+		select
+		count(*) from warehouseorder
+	</select>
+
+	<!-- 查询功能 -->
+	<select id="selectByWheres" resultType="com.kang.pojo.WarehousePoJo"
+		parameterType="map">
+		SELECT
+		w.purchaseordereid,
+		w.warehousenumber,
+		w.address,
+		w.company,
+		supplier.suppliercode,
+		supplier.chinesename,
+		war.warehousename,
+		wi.number,
+		w.companytelephone,
+		iif.materialmaterial,
+		w.finalprocessingtime,
+		w.lastpersonid
+
+
+		FROM
+		warehouseorder w,
+		warehouse_iteminformation wi,
+		inteminformation iif,
+		warehousemanagement_iteminformation wf,
+		warehousemanagement war,
+		supplier supplier
+
+		WHERE 1=1
+		AND
+		w.supplierID=supplier.supplierID
+		and
+		w.purchaseordereid=wi.purchaseOrdereID
+		AND
+		wi.itemInformationid=iif.intemInformationid
+		AND
+		war.warehouseManagementID=wf.warehouseManagementID
+		AND
+		wf.itemInformationid=iif.intemInformationid
+		<if test="warehousenumber !=null and warehousenumber!='' ">
+			AND w.warehousenumber like'%${warehousenumber}%'
+		</if>
+		<if test="address !=null and address !='' ">
+			AND w.address like'%${address}%'
+		</if>
+		<if test="companyTelephone !=null and companyTelephone !='' ">
+			AND w.companyTelephone=#{companyTelephone}
+		</if>
+		<if test="chinesename !=null and chinesename !='' ">
+			AND supplier.chinesename=#{chinesename}
+		</if>
+		<if test="suppliercode !=null and suppliercode !='' ">
+			AND supplier.suppliercode=#{suppliercode}
+		</if>
+		<if test="createtime !=null and createtime !='' ">
+			AND w.finalprocessingtime &gt; #{createtime}
+		</if>
+		<if test="finalprocessingtime !=null and finalprocessingtime !='' ">
+			AND w.finalprocessingtime &lt; #{finalprocessingtime}
+		</if>
+		<if test="lastpersonid !=null and lastpersonid !='' ">
+			AND w.lastpersonid=#{lastpersonid}
+		</if>
+		<if test="warehousemanagementid !=null and warehousemanagementid !='' ">
+			AND war.warehouseName like'%${warehousenumber}%'
+		</if>
+		<if test="company !=null and company !='' ">
+			AND w.company like'%${warehousenumber}%'
+		</if>
+		<if test="materialmaterial !=null and materialmaterial !='' ">
+			AND iif.materialmaterial=#{materialmaterial}
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY w.finalprocessingtime desc limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selectByWherescount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+		count(*)
+		FROM
+		warehouseorder w,
+		warehouse_iteminformation wi,
+		inteminformation iif,
+		warehousemanagement_iteminformation wf,
+		warehousemanagement war,
+		supplier supplier
+
+		WHERE 1=1
+		AND
+		w.supplierID=supplier.supplierID
+		and
+		w.purchaseordereid=wi.purchaseOrdereID
+		AND
+		wi.itemInformationid=iif.intemInformationid
+		AND
+		war.warehouseManagementID=wf.warehouseManagementID
+		AND
+		wf.itemInformationid=iif.intemInformationid
+		<if test="warehousenumber !=null and warehousenumber!='' ">
+			AND w.warehousenumber like'%${warehousenumber}%'
+		</if>
+		<if test="address !=null and address !='' ">
+			AND w.address like'%${address}%'
+		</if>
+		<if test="companyTelephone !=null and companyTelephone !='' ">
+			AND w.companyTelephone=#{companyTelephone}
+		</if>
+		<if test="chinesename !=null and chinesename !='' ">
+			AND supplier.chinesename=#{chinesename}
+		</if>
+		<if test="suppliercode !=null and suppliercode !='' ">
+			AND supplier.suppliercode=#{suppliercode}
+		</if>
+		<if test="createtime !=null and createtime !='' ">
+			AND w.finalprocessingtime &gt; #{createtime}
+		</if>
+		<if test="finalprocessingtime !=null and finalprocessingtime !='' ">
+			AND w.finalprocessingtime &lt; #{finalprocessingtime}
+		</if>
+		<if test="lastpersonid !=null and lastpersonid !='' ">
+			AND w.lastpersonid=#{lastpersonid}
+		</if>
+		<if test="warehousemanagementid !=null and warehousemanagementid !='' ">
+			AND war.warehouseName like'%${warehousenumber}%'
+		</if>
+		<if test="company !=null and company !='' ">
+			AND w.company like'%${warehousenumber}%'
+		</if>
+		<if test="materialmaterial !=null and materialmaterial !='' ">
+			AND iif.materialmaterial=#{materialmaterial}
+		</if>
+	</select>
+
+	<!-- 物品采购入库 -->
+	<select id="selectwupingcaigoubaobiao" resultType="com.kang.pojo.WareOrderReport"
+		parameterType="map">
+		SELECT
+		iif.itemcode,
+		iif.articlebarcode,
+		iif.chinesename,
+		supplier.chinesename suppname,
+		iif.purchasespecifications,
+		iif.purchasingunit,
+		pi.number,
+		wi.number rknumber,
+		war.warehousename,
+		i.inventorylocationname
+		FROM
+		warehouseorder w,
+		warehouse_iteminformation wi,
+		inteminformation iif,
+		warehousemanagement war,
+		supplier supplier,
+		purchaseorder p,
+		purchaseorder_iteminformation pi,
+		inventorylocation i
+		WHERE 1=1
+		AND
+		w.supplierID=supplier.supplierID
+		and
+		w.purchaseordereid=wi.purchaseOrdereID
+		AND
+		wi.itemInformationid=iif.intemInformationid
+		AND
+		w.warehouseID=war.warehouseManagementID
+		AND
+		w.address=p.orderNumber
+		AND
+		p.purchaseorderid=pi.purchaseorderid
+		and
+		pi.iteminformationid=iif.inteminformationid
+		AND
+		wi.inventoryLocationID=i.inventoryLocationID
+		
+		<if test="fristTime !=null and fristTime!='' ">
+			AND w.createTime &gt; #{fristTime}
+		</if>
+		<if test="secondTime !=null and secondTime!='' ">
+			AND w.createTime &lt; #{secondTime!=}
+		</if>
+		<if test="itemcode !=null and itemcode!='' ">
+			AND iif.itemCode like '%${itemcode}%'
+		</if>
+		<if test="itemname !=null and itemname!='' ">
+			AND iif.chinesename like'%${itemname}%' 
+		</if>
+		<if test="mincount>=0 ">
+			ORDER BY w.finalProcessingTime desc limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selectwupingcaigoubaobiaotwo" resultType="com.kang.pojo.WareOrderReport"
+		parameterType="map">
+		SELECT
+		iif.itemcode,
+		iif.articlebarcode,
+		iif.chinesename,
+		iif.purchasespecifications,
+		iif.purchasingunit,
+		gi.storageQuantity rknumber,
+		war.warehousename
+		FROM
+		generalstorage g,
+		generalstorage_iteminformation gi,
+		inteminformation iif,
+		warehousemanagement war
+		WHERE 1=1
+		and
+		g.generalStorageID=gi.generalStorageID
+		AND
+		gi.itemInformationid=iif.intemInformationid
+		AND
+		g.warehouseID=war.warehouseManagementID
+		
+		<if test="fristTime !=null and fristTime!='' ">
+			AND g.createTime &gt; #{fristTime}
+		</if>
+		<if test="secondTime !=null and secondTime!='' ">
+			AND g.createTime &lt; #{secondTime}
+		</if>
+		<if test="itemcode !=null and itemcode!='' ">
+			AND iif.itemCode like '%${itemcode}%'
+		</if>
+		<if test="itemname !=null and itemname!='' ">
+			AND iif.chinesename like'%${itemname}%' 
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY g.lastmodifiedtime desc limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<!-- 物品采购入库 -->
+	<select id="selectwupingcaigoubaobiaocount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+		count(*)
+		FROM
+		warehouseorder w,
+		warehouse_iteminformation wi,
+		inteminformation iif,
+		warehousemanagement war,
+		supplier supplier,
+		purchaseorder p,
+		purchaseorder_iteminformation pi,
+		inventorylocation i
+		WHERE 1=1
+		AND
+		w.supplierID=supplier.supplierID
+		and
+		w.purchaseordereid=wi.purchaseOrdereID
+		AND
+		wi.itemInformationid=iif.intemInformationid
+		AND
+		w.warehouseID=war.warehouseManagementID
+		AND
+		w.address=p.orderNumber
+		AND
+		p.purchaseorderid=pi.purchaseorderid
+		and
+		pi.iteminformationid=iif.inteminformationid
+		AND
+		wi.inventoryLocationID=i.inventoryLocationID
+		
+		<if test="fristTime !=null and fristTime!='' ">
+			AND w.createTime &gt; #{fristTime}
+		</if>
+		<if test="secondTime !=null and secondTime!='' ">
+			AND w.createTime &lt; #{secondTime}
+		</if>
+		<if test="itemcode !=null and itemcode!='' ">
+			AND iif.itemCode like '%${itemcode}%'
+		</if>
+		<if test="itemname !=null and itemname!='' ">
+			AND iif.chinesename like'%${itemname}%' 
+		</if>
+	</select>
+	<select id="selectwupingcaigoubaobiaotwocount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+			count(*)
+		FROM
+		generalstorage g,
+		generalstorage_iteminformation gi,
+		inteminformation iif,
+		warehousemanagement war
+		WHERE 1=1
+		and
+		g.generalStorageID=gi.generalStorageID
+		AND
+		gi.itemInformationid=iif.intemInformationid
+		AND
+		g.warehouseID=war.warehouseManagementID
+		
+		<if test="fristTime !=null and fristTime!='' ">
+			AND g.createdate &gt; #{fristTime}
+		</if>
+		<if test="secondTime !=null and secondTime!='' ">
+			AND g.createdate &lt; #{secondTime}
+		</if>
+		<if test="itemcode !=null and itemcode!='' ">
+			AND iif.itemCode like '%${itemcode}%'
+		</if>
+		<if test="itemname !=null and itemname!='' ">
+			AND iif.chinesename like'%${itemname}%' 
+		</if>
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		warehouseorder
+		where purchaseOrdereID =
+		#{purchaseordereid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.WarehouseOrder">
+		insert into warehouseorder
+		(purchaseOrdereID, warehouseNumber,
+		buyerID, warehouseID,
+		companyTelephone,
+		address, supplierID, company,
+		createTime,
+		finalProcessingTime, createPersonID,
+		lastPersonID)
+		values
+		(#{purchaseordereid,jdbcType=INTEGER},
+		#{warehousenumber,jdbcType=VARCHAR},
+		#{buyerid,jdbcType=INTEGER},
+		#{warehouseid,jdbcType=INTEGER},
+		#{companytelephone,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR}, #{supplierid,jdbcType=INTEGER},
+		#{company,jdbcType=VARCHAR},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{finalprocessingtime,jdbcType=DATE},
+		#{createpersonid,jdbcType=INTEGER},
+		#{lastpersonid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.WarehouseOrder">
+		insert into warehouseorder
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="purchaseordereid != null">
+				purchaseOrdereID,
+			</if>
+			<if test="warehousenumber != null">
+				warehouseNumber,
+			</if>
+			<if test="buyerid != null">
+				buyerID,
+			</if>
+			<if test="warehouseid != null">
+				warehouseID,
+			</if>
+			<if test="companytelephone != null">
+				companyTelephone,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="supplierid != null">
+				supplierID,
+			</if>
+			<if test="company != null">
+				company,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="finalprocessingtime != null">
+				finalProcessingTime,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="purchaseordereid != null">
+				#{purchaseordereid,jdbcType=INTEGER},
+			</if>
+			<if test="warehousenumber != null">
+				#{warehousenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="buyerid != null">
+				#{buyerid,jdbcType=INTEGER},
+			</if>
+			<if test="warehouseid != null">
+				#{warehouseid,jdbcType=INTEGER},
+			</if>
+			<if test="companytelephone != null">
+				#{companytelephone,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="supplierid != null">
+				#{supplierid,jdbcType=INTEGER},
+			</if>
+			<if test="company != null">
+				#{company,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finalprocessingtime != null">
+				#{finalprocessingtime,jdbcType=DATE},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				#{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.WarehouseOrder">
+		update warehouseorder
+		<set>
+			<if test="warehousenumber != null">
+				warehouseNumber = #{warehousenumber,jdbcType=VARCHAR},
+			</if>
+			<if test="buyerid != null">
+				buyerID = #{buyerid,jdbcType=INTEGER},
+			</if>
+			<if test="warehouseid != null">
+				warehouseID = #{warehouseid,jdbcType=INTEGER},
+			</if>
+			<if test="companytelephone != null">
+				companyTelephone = #{companytelephone,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="supplierid != null">
+				supplierID = #{supplierid,jdbcType=INTEGER},
+			</if>
+			<if test="company != null">
+				company = #{company,jdbcType=VARCHAR},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finalprocessingtime != null">
+				finalProcessingTime =
+				#{finalprocessingtime,jdbcType=DATE},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where purchaseOrdereID = #{purchaseordereid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.WarehouseOrder">
+		update
+		warehouseorder
+		set warehouseNumber =
+		#{warehousenumber,jdbcType=VARCHAR},
+		buyerID =
+		#{buyerid,jdbcType=INTEGER},
+		warehouseID =
+		#{warehouseid,jdbcType=INTEGER},
+		companyTelephone =
+		#{companytelephone,jdbcType=VARCHAR},
+		address =
+		#{address,jdbcType=VARCHAR},
+		supplierID =
+		#{supplierid,jdbcType=INTEGER},
+		company = #{company,jdbcType=VARCHAR},
+		createTime = #{createtime,jdbcType=TIMESTAMP},
+		finalProcessingTime =
+		#{finalprocessingtime,jdbcType=DATE},
+		createPersonID =
+		#{createpersonid,jdbcType=INTEGER},
+		lastPersonID =
+		#{lastpersonid,jdbcType=INTEGER}
+		where purchaseOrdereID =
+		#{purchaseordereid,jdbcType=INTEGER}
+	</update>
+</mapper>

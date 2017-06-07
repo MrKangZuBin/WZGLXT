@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.StoreWarningMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.StoreWarning" >
+    <id column="storeWarningID" property="storewarningid" jdbcType="INTEGER" />
+    <result column="shopID" property="shopid" jdbcType="INTEGER" />
+    <result column="itemInformationID" property="iteminformationid" jdbcType="INTEGER" />
+    <result column="warningType" property="warningtype" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="warningDate" property="warningdate" jdbcType="TIMESTAMP" />
+    <result column="personID" property="personid" jdbcType="INTEGER" />
+    <result column="processingTime" property="processingtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    storeWarningID, shopID, itemInformationID, warningType, status, warningDate, personID, 
+    processingTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from storewarning
+    where storeWarningID = #{storewarningid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from storewarning
+    where storeWarningID = #{storewarningid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.StoreWarning" >
+    insert into storewarning (storeWarningID, shopID, itemInformationID, 
+      warningType, status, warningDate, 
+      personID, processingTime)
+    values (#{storewarningid,jdbcType=INTEGER}, #{shopid,jdbcType=INTEGER}, #{iteminformationid,jdbcType=INTEGER}, 
+      #{warningtype,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{warningdate,jdbcType=TIMESTAMP}, 
+      #{personid,jdbcType=INTEGER}, #{processingtime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.StoreWarning" >
+    insert into storewarning
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="storewarningid != null" >
+        storeWarningID,
+      </if>
+      <if test="shopid != null" >
+        shopID,
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID,
+      </if>
+      <if test="warningtype != null" >
+        warningType,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="warningdate != null" >
+        warningDate,
+      </if>
+      <if test="personid != null" >
+        personID,
+      </if>
+      <if test="processingtime != null" >
+        processingTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="storewarningid != null" >
+        #{storewarningid,jdbcType=INTEGER},
+      </if>
+      <if test="shopid != null" >
+        #{shopid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="warningtype != null" >
+        #{warningtype,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="warningdate != null" >
+        #{warningdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="personid != null" >
+        #{personid,jdbcType=INTEGER},
+      </if>
+      <if test="processingtime != null" >
+        #{processingtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.StoreWarning" >
+    update storewarning
+    <set >
+      <if test="shopid != null" >
+        shopID = #{shopid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="warningtype != null" >
+        warningType = #{warningtype,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="warningdate != null" >
+        warningDate = #{warningdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="personid != null" >
+        personID = #{personid,jdbcType=INTEGER},
+      </if>
+      <if test="processingtime != null" >
+        processingTime = #{processingtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where storeWarningID = #{storewarningid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.StoreWarning" >
+    update storewarning
+    set shopID = #{shopid,jdbcType=INTEGER},
+      itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      warningType = #{warningtype,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      warningDate = #{warningdate,jdbcType=TIMESTAMP},
+      personID = #{personid,jdbcType=INTEGER},
+      processingTime = #{processingtime,jdbcType=TIMESTAMP}
+    where storeWarningID = #{storewarningid,jdbcType=INTEGER}
+  </update>
+</mapper>

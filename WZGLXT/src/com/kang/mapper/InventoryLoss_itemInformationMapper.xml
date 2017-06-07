@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.InventoryLoss_itemInformationMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.InventoryLoss_itemInformation" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="inventoryLossID" property="inventorylossid" jdbcType="INTEGER" />
+    <result column="warehouseID" property="warehouseid" jdbcType="INTEGER" />
+    <result column="itemInformationID" property="iteminformationid" jdbcType="INTEGER" />
+    <result column="lossNumber" property="lossnumber" jdbcType="INTEGER" />
+    <result column="lossReason" property="lossreason" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, inventoryLossID, warehouseID, itemInformationID, lossNumber, lossReason
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from inventoryloss_iteminformation
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <!-- 库存报损-简单查询 -->
+  <select id="selectbaosunone" resultMap="BaseResultMap">
+  	select inventorylossid,lossnumber
+    from inventoryloss_iteminformation
+  </select>
+  
+  <!-- 根据id查询物品id -->
+  <select id="selectBybaosun" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select *  from inventoryloss_iteminformation  where inventorylossid = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from inventoryloss_iteminformation
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.InventoryLoss_itemInformation" >
+    insert into inventoryloss_iteminformation (id, inventoryLossID, warehouseID, 
+      itemInformationID, lossNumber, lossReason
+      )
+    values (#{id,jdbcType=INTEGER}, #{inventorylossid,jdbcType=INTEGER}, #{warehouseid,jdbcType=INTEGER}, 
+      #{iteminformationid,jdbcType=INTEGER}, #{lossnumber,jdbcType=INTEGER}, #{lossreason,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.InventoryLoss_itemInformation" >
+    insert into inventoryloss_iteminformation
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="inventorylossid != null" >
+        inventoryLossID,
+      </if>
+      <if test="warehouseid != null" >
+        warehouseID,
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID,
+      </if>
+      <if test="lossnumber != null" >
+        lossNumber,
+      </if>
+      <if test="lossreason != null" >
+        lossReason,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="inventorylossid != null" >
+        #{inventorylossid,jdbcType=INTEGER},
+      </if>
+      <if test="warehouseid != null" >
+        #{warehouseid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="lossnumber != null" >
+        #{lossnumber,jdbcType=INTEGER},
+      </if>
+      <if test="lossreason != null" >
+        #{lossreason,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.InventoryLoss_itemInformation" >
+    update inventoryloss_iteminformation
+    <set >
+      <if test="inventorylossid != null" >
+        inventoryLossID = #{inventorylossid,jdbcType=INTEGER},
+      </if>
+      <if test="warehouseid != null" >
+        warehouseID = #{warehouseid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="lossnumber != null" >
+        lossNumber = #{lossnumber,jdbcType=INTEGER},
+      </if>
+      <if test="lossreason != null" >
+        lossReason = #{lossreason,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.InventoryLoss_itemInformation" >
+    update inventoryloss_iteminformation
+    set inventoryLossID = #{inventorylossid,jdbcType=INTEGER},
+      warehouseID = #{warehouseid,jdbcType=INTEGER},
+      itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      lossNumber = #{lossnumber,jdbcType=INTEGER},
+      lossReason = #{lossreason,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

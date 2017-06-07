@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.Role_jurisdictionMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.Role_jurisdiction" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="roleID" property="roleid" jdbcType="INTEGER" />
+    <result column="jurisdictionID" property="jurisdictionid" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, roleID, jurisdictionID, status, createDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from role_jurisdiction
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  
+  <select id="selectByRoleid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+  	select id,jurisdictionID from role_jurisdiction where roleid=#{roleid}
+  </select>
+  
+  <select id="selectByRoleidjurisdictionid" resultMap="BaseResultMap" parameterType="java.lang.String">
+  	select id from role_jurisdiction where roleid=#{roleid} and jurisdictionid=#{jurisdictionid}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from role_jurisdiction
+    where roleid = #{roleid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="java.util.List" >
+    insert into role_jurisdiction (roleID, jurisdictionID,status, createDate)
+    values
+    <foreach collection="list" index="index" item="item" 
+			separator="," >
+	(#{item.roleid,jdbcType=INTEGER}, #{item.jurisdictionid,jdbcType=INTEGER},#{item.status,jdbcType=VARCHAR}, #{item.createdate,jdbcType=TIMESTAMP})
+	</foreach>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Role_jurisdiction" >
+    update role_jurisdiction
+    <set >
+      <if test="roleid != null" >
+        roleID = #{roleid,jdbcType=INTEGER},
+      </if>
+      <if test="jurisdictionid != null" >
+        jurisdictionID = #{jurisdictionid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.Role_jurisdiction" >
+    update role_jurisdiction
+    set roleID = #{roleid,jdbcType=INTEGER},
+      jurisdictionID = #{jurisdictionid,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      createDate = #{createdate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

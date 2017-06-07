@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.InventoryLocationMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.InventoryLocation">
+		<id column="inventoryLocationID" property="inventorylocationid"
+			jdbcType="INTEGER" />
+		<result column="inventoryLocationCode" property="inventorylocationcode"
+			jdbcType="VARCHAR" />
+		<result column="inventoryLocationName" property="inventorylocationname"
+			jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="firstID" property="firstid" jdbcType="INTEGER" />
+		<result column="secondID" property="secondid" jdbcType="INTEGER" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="InventoryLocationUserMap" type="com.kang.pojo.InventoryLocationUser">
+		<id column="inventoryLocationID" property="inventorylocationid"
+			jdbcType="INTEGER" />
+		<result column="inventoryLocationCode" property="inventorylocationcode"
+			jdbcType="VARCHAR" />
+		<result column="inventoryLocationName" property="inventorylocationname"
+			jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="firstID" property="firstid" jdbcType="INTEGER" />
+		<result column="secondID" property="secondid" jdbcType="INTEGER" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="loginName" property="createpersonname" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<select id="findPagingList" resultMap="InventoryLocationUserMap"
+		parameterType="map">
+		select i.* , u.loginName from user u , inventorylocation i
+		<where>
+			and i.createPersonID = u.userID
+			<if test="firstid != null and firstid != ''">
+				and i.firstID = #{firstid }
+			</if>
+			<if test="secondid != null and secondid != ''">
+				and i.secondID = #{secondid }
+			</if>
+		</where>
+		limit #{currpage } , #{pagecount}
+		<!-- order by createTime -->
+	</select>
+	<select id="selrow" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from inventorylocation
+		<where>
+			<if test="firstid != null and firstid != ''">
+				and firstID = #{firstid}
+			</if>
+			<if test="secondid != null and secondid != ''">
+				and secondID = #{secondid}
+			</if>
+		</where>
+	</select>
+	<select id="inventorylocationList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from inventorylocation
+	</select>
+	
+	<select id="selectid" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from inventorylocation
+		where firstid = #{inventorylocationid,jdbcType=INTEGER}
+	</select>
+	
+	<delete id="deletenext" parameterType="java.lang.Integer">
+		delete from inventorylocation
+		where
+		firstid = #{inventorylocationid,jdbcType=INTEGER}
+	</delete>
+	
+	<sql id="Base_Column_List">
+		inventoryLocationID, inventoryLocationCode, inventoryLocationName, description, firstID,
+		secondID, createTime, createPersonID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from inventorylocation
+		where inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER}
+	</select>
+	<select id="selectByPrimaryKeys" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from inventorylocation i,WarehouseManagement w,WarehouseManagement_itemInformation wi
+		where i.inventoryLocationID = wi.inventoryLocationID
+		and w.inventoryLocationID=#{inventorylocationid}
+		and w.warehousemanagementid=wi.warehousemanagementid
+		
+	</select>
+
+	<!-- 查询id和库位名称-->
+	<select id="selectInventoryLocationall" resultMap="BaseResultMap">
+		select inventorylocationid,inventorylocationname
+		from inventorylocation
+	</select>
+	
+	<!-- 查询库位id -->
+	<select id="selectInventoryLocationid" resultMap="BaseResultMap" parameterType="map">
+		select i.inventorylocationid
+		from inventorylocation i,WarehouseManagement w,WarehouseManagement_itemInformation wi
+		where 1=1
+		and
+		w.warehousemanagementid=#{wareid}
+		and
+		w.warehousemanagementid=wi.warehousemanagementid
+		and
+		wi.inventoryLocationid=i.inventoryLocationid
+		and wi.iteminformationid=#{itemid}
+	</select>
+	<!-- 查询库位表的数据上级库位 -->
+	<select id="selectcaigou" resultMap="BaseResultMap"> 
+		select inventorylocationid,firstid,inventorylocationname  from inventorylocation
+	</select>
+	
+	<!-- 库存查询-普通查询 -->
+	<select id="selectkucunone" resultMap="BaseResultMap">
+		select inventoryLocationid,inventorylocationcode,inventorylocationname
+		from inventorylocation
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from inventorylocation
+		where inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.InventoryLocation">
+		insert into inventorylocation (inventoryLocationID,
+		inventoryLocationCode,
+		inventoryLocationName, description, firstID,
+		secondID, createTime, createPersonID
+		)
+		values (#{inventorylocationid,jdbcType=INTEGER},
+		#{inventorylocationcode,jdbcType=VARCHAR},
+		#{inventorylocationname,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR}, #{firstid,jdbcType=INTEGER},
+		#{secondid,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP},
+		#{createpersonid,jdbcType=INTEGER}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.InventoryLocation">
+		insert into inventorylocation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="inventorylocationid != null">
+				inventoryLocationID,
+			</if>
+			<if test="inventorylocationcode != null">
+				inventoryLocationCode,
+			</if>
+			<if test="inventorylocationname != null">
+				inventoryLocationName,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="firstid != null">
+				firstID,
+			</if>
+			<if test="secondid != null">
+				secondID,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="inventorylocationid != null">
+				#{inventorylocationid,jdbcType=INTEGER},
+			</if>
+			<if test="inventorylocationcode != null">
+				#{inventorylocationcode,jdbcType=VARCHAR},
+			</if>
+			<if test="inventorylocationname != null">
+				#{inventorylocationname,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="firstid != null">
+				#{firstid,jdbcType=INTEGER},
+			</if>
+			<if test="secondid != null">
+				#{secondid,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.InventoryLocation">
+		update inventorylocation
+		<set>
+			<if test="inventorylocationcode != null">
+				inventoryLocationCode = #{inventorylocationcode,jdbcType=VARCHAR},
+			</if>
+			<if test="inventorylocationname != null">
+				inventoryLocationName = #{inventorylocationname,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="firstid != null">
+				firstID = #{firstid,jdbcType=INTEGER},
+			</if>
+			<if test="secondid != null">
+				secondID = #{secondid,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.InventoryLocation">
+		update inventorylocation
+		set inventoryLocationCode = #{inventorylocationcode,jdbcType=VARCHAR},
+		inventoryLocationName = #{inventorylocationname,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		firstID = #{firstid,jdbcType=INTEGER},
+		secondID = #{secondid,jdbcType=INTEGER},
+		createTime = #{createtime,jdbcType=TIMESTAMP},
+		createPersonID = #{createpersonid,jdbcType=INTEGER}
+		where inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER}
+	</update>
+</mapper>

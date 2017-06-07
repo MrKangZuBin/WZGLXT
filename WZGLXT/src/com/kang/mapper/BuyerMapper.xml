@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.BuyerMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.Buyer" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="jobNumber" property="jobnumber" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="purchasingOfficer" property="purchasingofficer" jdbcType="VARCHAR" />
+    <result column="createPersonID" property="createpersonid" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, jobNumber, name, purchasingOfficer, createPersonID, createTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from buyer
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from buyer
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.Buyer" >
+    insert into buyer (id, jobNumber, name, 
+      purchasingOfficer, createPersonID, createTime
+      )
+    values (#{id,jdbcType=INTEGER}, #{jobnumber,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{purchasingofficer,jdbcType=VARCHAR}, #{createpersonid,jdbcType=INTEGER}, #{createtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.Buyer" >
+    insert into buyer
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="jobnumber != null" >
+        jobNumber,
+      </if>
+      <if test="name != null" >
+        name,
+      </if>
+      <if test="purchasingofficer != null" >
+        purchasingOfficer,
+      </if>
+      <if test="createpersonid != null" >
+        createPersonID,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="jobnumber != null" >
+        #{jobnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="purchasingofficer != null" >
+        #{purchasingofficer,jdbcType=VARCHAR},
+      </if>
+      <if test="createpersonid != null" >
+        #{createpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Buyer" >
+    update buyer
+    <set >
+      <if test="jobnumber != null" >
+        jobNumber = #{jobnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="purchasingofficer != null" >
+        purchasingOfficer = #{purchasingofficer,jdbcType=VARCHAR},
+      </if>
+      <if test="createpersonid != null" >
+        createPersonID = #{createpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.Buyer" >
+    update buyer
+    set jobNumber = #{jobnumber,jdbcType=VARCHAR},
+      name = #{name,jdbcType=VARCHAR},
+      purchasingOfficer = #{purchasingofficer,jdbcType=VARCHAR},
+      createPersonID = #{createpersonid,jdbcType=INTEGER},
+      createTime = #{createtime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

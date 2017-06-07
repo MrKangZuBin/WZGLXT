@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.SupplierRecruitmentMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.SupplierRecruitment" >
+    <id column="supplierRecruitmentID" property="supplierrecruitmentid" jdbcType="INTEGER" />
+    <result column="recruitingNumber" property="recruitingnumber" jdbcType="VARCHAR" />
+    <result column="recruitmentDescription" property="recruitmentdescription" jdbcType="VARCHAR" />
+    <result column="deadline" property="deadline" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    supplierRecruitmentID, recruitingNumber, recruitmentDescription, deadline
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from supplierrecruitment
+    where supplierRecruitmentID = #{supplierrecruitmentid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from supplierrecruitment
+    where supplierRecruitmentID = #{supplierrecruitmentid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.SupplierRecruitment" >
+    insert into supplierrecruitment (supplierRecruitmentID, recruitingNumber, 
+      recruitmentDescription, deadline)
+    values (#{supplierrecruitmentid,jdbcType=INTEGER}, #{recruitingnumber,jdbcType=VARCHAR}, 
+      #{recruitmentdescription,jdbcType=VARCHAR}, #{deadline,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.SupplierRecruitment" >
+    insert into supplierrecruitment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="supplierrecruitmentid != null" >
+        supplierRecruitmentID,
+      </if>
+      <if test="recruitingnumber != null" >
+        recruitingNumber,
+      </if>
+      <if test="recruitmentdescription != null" >
+        recruitmentDescription,
+      </if>
+      <if test="deadline != null" >
+        deadline,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="supplierrecruitmentid != null" >
+        #{supplierrecruitmentid,jdbcType=INTEGER},
+      </if>
+      <if test="recruitingnumber != null" >
+        #{recruitingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="recruitmentdescription != null" >
+        #{recruitmentdescription,jdbcType=VARCHAR},
+      </if>
+      <if test="deadline != null" >
+        #{deadline,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.SupplierRecruitment" >
+    update supplierrecruitment
+    <set >
+      <if test="recruitingnumber != null" >
+        recruitingNumber = #{recruitingnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="recruitmentdescription != null" >
+        recruitmentDescription = #{recruitmentdescription,jdbcType=VARCHAR},
+      </if>
+      <if test="deadline != null" >
+        deadline = #{deadline,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where supplierRecruitmentID = #{supplierrecruitmentid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.SupplierRecruitment" >
+    update supplierrecruitment
+    set recruitingNumber = #{recruitingnumber,jdbcType=VARCHAR},
+      recruitmentDescription = #{recruitmentdescription,jdbcType=VARCHAR},
+      deadline = #{deadline,jdbcType=TIMESTAMP}
+    where supplierRecruitmentID = #{supplierrecruitmentid,jdbcType=INTEGER}
+  </update>
+</mapper>

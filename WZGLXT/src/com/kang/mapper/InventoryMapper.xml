@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.InventoryMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.Inventory">
+		<id column="inventoryID" property="inventoryid" jdbcType="INTEGER" />
+		<result column="inventoryNumber" property="inventorynumber"
+			jdbcType="VARCHAR" />
+		<result column="warehouseID" property="warehouseid" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="inventoryDescription" property="inventorydescription"
+			jdbcType="VARCHAR" />
+		<result column="remarks" property="remarks" jdbcType="VARCHAR" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastModifiedID" property="lastmodifiedid"
+			jdbcType="INTEGER" />
+		<result column="lastModifiedTime" property="lastmodifiedtime"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		inventoryID, inventoryNumber, warehouseID, status, inventoryDescription, remarks,
+		createPersonID, createDate, lastModifiedID, lastModifiedTime
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select 
+		<include refid="Base_Column_List" />
+		from inventory
+		where inventoryID = #{inventoryid,jdbcType=INTEGER}
+	</select>
+
+	<!-- 库存盘点-简单查询 -->
+	<select id="selectpandianone" resultMap="BaseResultMap" parameterType="map">
+		select inventoryid,inventorynumber,warehouseid,status,inventorydescription,remarks,createpersonid,createdate
+		from inventory ORDER BY createdate desc limit
+		#{mincount},#{maxcount}
+	</select>
+	
+	<!-- 查询库存盘点表的总条数 -->
+	<select id="countpandian" resultType="java.lang.Integer">
+		select count(*) from inventory
+	</select>
+		
+	<!-- 库存盘点-编辑查询 -->
+	<select id="selectpandian" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select 
+		<include refid="Base_Column_List" />
+		from inventory
+		where inventoryID = #{inventoryid,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 库存盘点报表 -->
+	<select id="selectkucunpandianbaobiao" resultType="com.kang.pojo.PandianReport"
+		parameterType="map">
+		SELECT
+		iif.itemcode,
+		iif.articlebarcode,
+		iif.chinesename,
+		iif.purchasingunit,
+		iif.currentStock,
+		ii.inventoryInventory,
+		ii.profitLossNumber
+		FROM
+		inventory i,
+		inventory_iteminformation ii,
+		inteminformation iif,
+		warehousemanagement war
+		WHERE 1=1
+		and
+		i.inventoryID=ii.inventoryID
+		AND
+		ii.itemInformationid=iif.intemInformationid
+		AND
+		i.warehouseID=war.warehouseManagementID
+		
+		<if test="fristTime !=null and fristTime!='' ">
+			AND i.createDate &gt; #{fristTime}
+		</if>
+		<if test="secondTime !=null and secondTime!='' ">
+			AND i.createDate &lt; #{secondTime}
+		</if>
+		<if test="itemcode !=null and itemcode!='' ">
+			AND iif.itemCode like '%${itemcode}%'
+		</if>
+		<if test="itemname !=null and itemname!='' ">
+			AND iif.chinesename like'%${itemname}%' 
+		</if>
+		<if test="warename !=null and warename!='' ">
+			AND war.warehouseName like'%${warename}%' 
+		</if>
+		<if test="mincount>=0 ">
+			ORDER BY i.lastModifiedTime desc limit #{mincount},#{maxcount}
+		</if>
+	</select>
+	<!-- 库存盘点报表-总条数 -->
+	<select id="selectkucunpandianbaobiaocount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+		count(*)
+		FROM
+		inventory i,
+		inventory_iteminformation ii,
+		inteminformation iif,
+		warehousemanagement war
+		WHERE 1=1
+		and
+		i.inventoryID=ii.inventoryID
+		AND
+		ii.itemInformationid=iif.intemInformationid
+		AND
+		i.warehouseID=war.warehouseManagementID
+		
+		<if test="fristTime !=null and fristTime!='' ">
+			AND i.createDate &gt; #{fristTime}
+		</if>
+		<if test="secondTime !=null and secondTime!='' ">
+			AND i.createDate &lt; #{secondTime}
+		</if>
+		<if test="itemcode !=null and itemcode!='' ">
+			AND iif.itemCode like '%${itemcode}%'
+		</if>
+		<if test="itemname !=null and itemname!='' ">
+			AND iif.chinesename like'%${itemname}%' 
+		</if>
+		<if test="warename !=null and warename!='' ">
+			AND war.warehouseName like'%${warename}%' 
+		</if>
+		
+	</select>
+	
+	
+	<!-- 查询功能 -->
+	<select id="selectByWheres" resultType="com.kang.pojo.InventoryPoJo"
+		parameterType="map">
+		SELECT
+		i.inventoryid,
+		i.inventorynumber,
+		i.inventorydescription,
+		ii.inventoryinventory,
+		i.status,
+		w.warehousename,
+		i.lastmodifiedtime,
+		u.loginname
+
+		FROM
+		inventory i,
+		inventory_iteminformation ii,
+		user u,
+		warehousemanagement w
+		
+		WHERE 1=1
+		AND
+		i.inventoryid=ii.inventoryid
+		AND
+		i.warehouseid=w.warehousemanagementid
+		AND
+		i.lastmodifiedid=u.userid
+		<if test="lossnumber !=null and lossnumber !='' ">
+			AND i.inventorynumber like'%${lossnumber}%'
+		</if>
+		<if test="losssay !=null and losssay !='' ">
+			AND i.inventorydescription like'%${losssay}%'
+		</if>
+		<if test="status !=null and status !='' ">
+			AND i.status=#{status}
+		</if>
+		<if test="starttime !=null and starttime !='' ">
+			AND i.lastmodifiedtime &gt; #{starttime}
+		</if>
+		<if test="endtime !=null and endtime !='' ">
+			AND i.lastmodifiedtime &lt; #{endtime}
+		</if>
+		<if test="warehousename !=null and warehousename !='' ">
+			AND w.warehousename like'%${warehousename}%'
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY i.lastModifiedTime desc limit
+			#{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selectByWherescount" resultType="java.lang.Integer"
+		parameterType="map">
+		SELECT
+			count(*)
+		FROM
+		inventory i,
+		inventory_iteminformation ii,
+		user u,
+		warehousemanagement w
+		
+		WHERE 1=1
+		AND
+		i.inventoryid=ii.inventoryid
+		AND
+		i.warehouseid=w.warehousemanagementid
+		AND
+		i.lastmodifiedid=u.userid
+		<if test="lossnumber !=null and lossnumber !='' ">
+			AND i.inventorynumber like'%${lossnumber}%'
+		</if>
+		<if test="losssay !=null and losssay !='' ">
+			AND i.inventorydescription like'%${losssay}%'
+		</if>
+		<if test="status !=null and status !='' ">
+			AND i.status=#{status}
+		</if>
+		<if test="starttime !=null and starttime !='' ">
+			AND i.lastmodifiedtime &gt; #{starttime}
+		</if>
+		<if test="endtime !=null and endtime !='' ">
+			AND i.lastmodifiedtime &lt; #{endtime}
+		</if>
+		<if test="warehousename !=null and warehousename !='' ">
+			AND w.warehousename like'%${warehousename}%'
+		</if>
+	</select>
+	
+	<!-- 根据单号查询id -->
+	<select id="selectByNumber" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select inventoryid	from inventory
+		where inventorynumber = #{inventorynumber,jdbcType=INTEGER}
+	</select>
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from inventory
+		where inventoryID = #{inventoryid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.Inventory">
+		insert into inventory (inventoryID, inventoryNumber, warehouseID,
+		status, inventoryDescription, remarks,
+		createPersonID, createDate, lastModifiedID,
+		lastModifiedTime)
+		values (#{inventoryid,jdbcType=INTEGER},
+		#{inventorynumber,jdbcType=VARCHAR}, #{warehouseid,jdbcType=INTEGER},
+		#{status,jdbcType=VARCHAR}, #{inventorydescription,jdbcType=VARCHAR},
+		#{remarks,jdbcType=VARCHAR},
+		#{createpersonid,jdbcType=INTEGER}, #{createdate,jdbcType=TIMESTAMP}, #{lastmodifiedid,jdbcType=INTEGER},
+		#{lastmodifiedtime,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.Inventory">
+		insert into inventory
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="inventoryid != null">
+				inventoryID,
+			</if>
+			<if test="inventorynumber != null">
+				inventoryNumber,
+			</if>
+			<if test="warehouseid != null">
+				warehouseID,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="inventorydescription != null">
+				inventoryDescription,
+			</if>
+			<if test="remarks != null">
+				remarks,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+			<if test="lastmodifiedid != null">
+				lastModifiedID,
+			</if>
+			<if test="lastmodifiedtime != null">
+				lastModifiedTime,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="inventoryid != null">
+				#{inventoryid,jdbcType=INTEGER},
+			</if>
+			<if test="inventorynumber != null">
+				#{inventorynumber,jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseid != null">
+				#{warehouseid,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="inventorydescription != null">
+				#{inventorydescription,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				#{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastmodifiedid != null">
+				#{lastmodifiedid,jdbcType=INTEGER},
+			</if>
+			<if test="lastmodifiedtime != null">
+				#{lastmodifiedtime,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Inventory">
+		update inventory
+		<set>
+			<if test="inventorynumber != null">
+				inventoryNumber = #{inventorynumber,jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseid != null">
+				warehouseID = #{warehouseid,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="inventorydescription != null">
+				inventoryDescription = #{inventorydescription,jdbcType=VARCHAR},
+			</if>
+			<if test="remarks != null">
+				remarks = #{remarks,jdbcType=VARCHAR},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastmodifiedid != null">
+				lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+			</if>
+			<if test="lastmodifiedtime != null">
+				lastModifiedTime = #{lastmodifiedtime,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where inventoryID = #{inventoryid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.Inventory">
+		update inventory
+		set inventoryNumber = #{inventorynumber,jdbcType=VARCHAR},
+		warehouseID = #{warehouseid,jdbcType=INTEGER},
+		status = #{status,jdbcType=VARCHAR},
+		inventoryDescription = #{inventorydescription,jdbcType=VARCHAR},
+		remarks = #{remarks,jdbcType=VARCHAR},
+		createPersonID = #{createpersonid,jdbcType=INTEGER},
+		createDate = #{createdate,jdbcType=TIMESTAMP},
+		lastModifiedID = #{lastmodifiedid,jdbcType=INTEGER},
+		lastModifiedTime = #{lastmodifiedtime,jdbcType=TIMESTAMP}
+		where inventoryID = #{inventoryid,jdbcType=INTEGER}
+	</update>
+</mapper>

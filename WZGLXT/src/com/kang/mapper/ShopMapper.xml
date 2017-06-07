@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ShopMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.Shop">
+		<id column="shopid" property="shopid" jdbcType="INTEGER" />
+		<result column="storeCode" property="storecode" jdbcType="VARCHAR" />
+		<result column="annexName" property="annexname" jdbcType="VARCHAR" />
+		<result column="annexPath" property="annexpath" jdbcType="VARCHAR" />
+		<result column="companyTelephone" property="companytelephone"
+			jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="finalProcessingTime" property="finalprocessingtime"
+			jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="usershopMap" type="com.kang.pojo.Shop_user">
+		<id column="shopid" property="shopid" jdbcType="INTEGER" />
+		<result column="storeCode" property="storecode" jdbcType="VARCHAR" />
+		<result column="annexName" property="annexname" jdbcType="VARCHAR" />
+		<result column="annexPath" property="annexpath" jdbcType="VARCHAR" />
+		<result column="companyTelephone" property="companytelephone"
+			jdbcType="VARCHAR" />
+		<result column="address" property="address" jdbcType="VARCHAR" />
+		<result column="description" property="description" jdbcType="VARCHAR" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+		<result column="finalProcessingTime" property="finalprocessingtime"
+			jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+		<result column="loginName" property="createpersonname"
+			jdbcType="VARCHAR" />
+		<result column="logname" property="lastpersonname" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="findPagingList" resultMap="usershopMap"
+		parameterType="map">
+		select s.*, u.loginName , us.loginName as logname from
+		shop s, user
+		u ,user us
+		<where>
+			and s.createPersonID = u.userID and s.lastPersonID = us.userID
+			<if test="storecode != null and storecode != ''">
+				and storecode like '%${storecode }%'
+			</if>
+			<if test="annexname != null and annexname != ''">
+				and annexname like '%${annexname }%'
+			</if>
+			<if test="annexpath != null and annexpath != ''">
+				and annexpath = #{annexpath }
+			</if>
+		</where>
+		limit #{currpage } , #{pagecount}
+		<!-- order by createTime -->
+	</select>
+	<select id="selrow" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from shop
+		<where>
+			<if test="storecode != null and storecode != ''">
+				and storecode like '%${storecode }%'
+			</if>
+			<if test="annexname != null and annexname != ''">
+				and annexname like '%${annexname }%'
+			</if>
+			<if test="annexpath != null and annexpath != ''">
+				and annexpath = #{annexpath }
+			</if>
+		</where>
+	</select>
+
+
+	<sql id="Base_Column_List">
+		shopid, storeCode, annexName, annexPath, companyTelephone, address,
+		description,
+		companyID, createTime, finalProcessingTime, createPersonID, lastPersonID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="usershopMap"
+		parameterType="java.lang.Integer">
+		select s.*, u.loginName , us.loginName as logname from
+		shop s, user
+		u ,user us
+		where s.createPersonID = u.userID and s.lastPersonID = us.userID and shopid = #{shopid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from shop
+		where shopid = #{shopid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.Shop">
+		insert into shop (shopid, storeCode, annexName,
+		annexPath, companyTelephone, address,
+		description, companyID, createTime,
+		finalProcessingTime, createPersonID,
+		lastPersonID)
+		values (#{shopid,jdbcType=INTEGER}, #{storecode,jdbcType=VARCHAR},
+		#{annexname,jdbcType=VARCHAR},
+		#{annexpath,jdbcType=VARCHAR}, #{companytelephone,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR},
+		#{description,jdbcType=VARCHAR}, #{companyid,jdbcType=INTEGER},
+		#{createtime,jdbcType=TIMESTAMP},
+		#{finalprocessingtime,jdbcType=TIMESTAMP},
+		#{createpersonid,jdbcType=INTEGER},
+		#{lastpersonid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.Shop">
+		insert into shop
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="shopid != null">
+				shopid,
+			</if>
+			<if test="storecode != null">
+				storeCode,
+			</if>
+			<if test="annexname != null">
+				annexName,
+			</if>
+			<if test="annexpath != null">
+				annexPath,
+			</if>
+			<if test="companytelephone != null">
+				companyTelephone,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="description != null">
+				description,
+			</if>
+			<if test="companyid != null">
+				companyID,
+			</if>
+			<if test="createtime != null">
+				createTime,
+			</if>
+			<if test="finalprocessingtime != null">
+				finalProcessingTime,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="shopid != null">
+				#{shopid,jdbcType=INTEGER},
+			</if>
+			<if test="storecode != null">
+				#{storecode,jdbcType=VARCHAR},
+			</if>
+			<if test="annexname != null">
+				#{annexname,jdbcType=VARCHAR},
+			</if>
+			<if test="annexpath != null">
+				#{annexpath,jdbcType=VARCHAR},
+			</if>
+			<if test="companytelephone != null">
+				#{companytelephone,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				#{description,jdbcType=VARCHAR},
+			</if>
+			<if test="companyid != null">
+				#{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				#{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finalprocessingtime != null">
+				#{finalprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				#{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Shop">
+		update shop
+		<set>
+			<if test="storecode != null">
+				storeCode = #{storecode,jdbcType=VARCHAR},
+			</if>
+			<if test="annexname != null">
+				annexName = #{annexname,jdbcType=VARCHAR},
+			</if>
+			<if test="annexpath != null">
+				annexPath = #{annexpath,jdbcType=VARCHAR},
+			</if>
+			<if test="companytelephone != null">
+				companyTelephone = #{companytelephone,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=VARCHAR},
+			</if>
+			<if test="companyid != null">
+				companyID = #{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="createtime != null">
+				createTime = #{createtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="finalprocessingtime != null">
+				finalProcessingTime = #{finalprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where shopid = #{shopid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.Shop">
+		update shop
+		set storeCode = #{storecode,jdbcType=VARCHAR},
+		annexName = #{annexname,jdbcType=VARCHAR},
+		annexPath = #{annexpath,jdbcType=VARCHAR},
+		companyTelephone = #{companytelephone,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		description = #{description,jdbcType=VARCHAR},
+		companyID = #{companyid,jdbcType=INTEGER},
+		createTime = #{createtime,jdbcType=TIMESTAMP},
+		finalProcessingTime = #{finalprocessingtime,jdbcType=TIMESTAMP},
+		createPersonID = #{createpersonid,jdbcType=INTEGER},
+		lastPersonID = #{lastpersonid,jdbcType=INTEGER}
+		where shopid = #{shopid,jdbcType=INTEGER}
+	</update>
+</mapper>

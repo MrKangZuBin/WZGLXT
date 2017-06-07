@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.RoleMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.Role">
+		<id column="roleID" property="roleid" jdbcType="INTEGER" />
+		<result column="roleName" property="rolename" jdbcType="VARCHAR" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		roleID, roleName, status, createDate
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from role
+		where roleID = #{roleid,jdbcType=INTEGER}
+	</select>
+	
+	<select id="selectRolename" parameterType="map" resultMap="BaseResultMap">
+		select roleid,rolename from role
+	</select>
+
+	<select id="selectRole" parameterType="map" resultMap="BaseResultMap">
+		select * from role
+		where 1=1
+		<if test="rolename!=null and rootname!='' ">
+			and roleName like '%${rolename}%'
+		</if>
+		<if test="mincount >=0 ">
+			ORDER BY createDate desc limit
+			#{mincount},#{maxcount}
+		</if>
+	</select>
+	<select id="selectRolecount" parameterType="map" resultType="java.lang.Integer">
+		select count(*) from role
+		where 1=1
+		<if test="rolename!=null and rootname!='' ">
+			and roleName like '%${rolename}%'
+		</if>
+	</select>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from role
+		where roleID = #{roleid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.Role">
+		insert into role (roleID, roleName, status,
+		createDate)
+		values (#{roleid,jdbcType=INTEGER}, #{rolename,jdbcType=VARCHAR},
+		#{status,jdbcType=VARCHAR},
+		#{createdate,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.Role">
+		insert into role
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roleid != null">
+				roleID,
+			</if>
+			<if test="rolename != null">
+				roleName,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roleid != null">
+				#{roleid,jdbcType=INTEGER},
+			</if>
+			<if test="rolename != null">
+				#{rolename,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Role">
+		update role
+		<set>
+			<if test="rolename != null">
+				roleName = #{rolename,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where roleID = #{roleid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.Role">
+		update role
+		set roleName = #{rolename,jdbcType=VARCHAR},
+		status = #{status,jdbcType=VARCHAR},
+		createDate = #{createdate,jdbcType=TIMESTAMP}
+		where roleID = #{roleid,jdbcType=INTEGER}
+	</update>
+</mapper>

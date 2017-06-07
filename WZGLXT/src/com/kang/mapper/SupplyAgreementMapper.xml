@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.SupplyAgreementMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.SupplyAgreement">
+		<id column="supplyAgreementID" property="supplyagreementid"
+			jdbcType="INTEGER" />
+		<result column="protocolCode" property="protocolcode" jdbcType="VARCHAR" />
+		<result column="supplierID" property="supplierid" jdbcType="INTEGER" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="protocolExplain" property="protocolexplain"
+			jdbcType="VARCHAR" />
+		<result column="startTime" property="starttime" jdbcType="TIMESTAMP" />
+		<result column="endTime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="protocoStatus" property="protocostatus"
+			jdbcType="VARCHAR" />
+		<result column="protocoEnclosure" property="protocoenclosure"
+			jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastProcessingTime" property="lastprocessingtime"
+			jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="supplyAgreementMap" type="com.kang.pojo.SupplyAgreement_user">
+		<id column="supplyAgreementID" property="supplyagreementid"
+			jdbcType="INTEGER" />
+		<result column="protocolCode" property="protocolcode" jdbcType="VARCHAR" />
+		<result column="supplierID" property="supplierid" jdbcType="INTEGER" />
+		<result column="companyID" property="companyid" jdbcType="INTEGER" />
+		<result column="protocolExplain" property="protocolexplain"
+			jdbcType="VARCHAR" />
+		<result column="startTime" property="starttime" jdbcType="TIMESTAMP" />
+		<result column="endTime" property="endtime" jdbcType="TIMESTAMP" />
+		<result column="protocoStatus" property="protocostatus"
+			jdbcType="VARCHAR" />
+		<result column="protocoEnclosure" property="protocoenclosure"
+			jdbcType="VARCHAR" />
+		<result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+		<result column="lastProcessingTime" property="lastprocessingtime"
+			jdbcType="TIMESTAMP" />
+		<result column="createPersonID" property="createpersonid"
+			jdbcType="INTEGER" />
+		<result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+		<result column="loginName" property="createpersonname"
+			jdbcType="VARCHAR" />
+		<result column="logname" property="lastpersonname" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="findPagingList" resultMap="BaseResultMap"
+		parameterType="map">
+		select s.*, u.loginName , us.loginName as logname from
+		supplyagreement
+		s, user
+		u ,user us
+		<where>
+			and s.createPersonID = u.userID and s.lastPersonID = us.userID
+			<if test="protocolcode != null and protocolcode != ''">
+				and protocolCode = #{protocolcode }
+			</if>
+			<if test="companyid != null and companyid != ''">
+				and companyId = #{companyid }
+			</if>
+			<if test="protocolexplain != null and protocolexplain != ''">
+				and protocolExplain like concat(concat('%',
+				#{protocolexplain }), '%')
+			</if>
+			<if test="suppliercode != null and suppliercode != ''">
+				and supplierID=(SELECT supplierID from supplier where
+				supplierCode = #{suppliercode })
+			</if>
+			<if test="protocostatus != null and protocostatus != ''">
+				and protocoStatus = #{protocostatus }
+			</if>
+			<if test="suppliername != null and suppliername != ''">
+				and supplierID in (SELECT supplierID from supplier where
+				chineseName like concat(concat('%', #{suppliername }), '%'))
+			</if>
+			<if
+				test="starttime1 != null and starttime1 != '' and starttime2 != null and starttime2 != ''">
+				and startTime between #{starttime1 } and #{starttime2 }
+			</if>
+			<if
+				test="endtime1 != null and endtime1 != '' and endtime2 != null and endtime2 != ''">
+				and endTime between #{endtime1 } and #{endtime2 }
+			</if>
+		</where>
+		limit #{currpage } , #{pagecount}
+		<!-- order by createTime -->
+	</select>
+	<select id="selrow" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from supplyagreement
+		<where>
+			<if test="protocolcode != null and protocolcode != ''">
+				and protocolCode = #{protocolcode }
+			</if>
+			<if test="companyid != null and companyid != ''">
+				and companyId = #{companyid }
+			</if>
+			<if test="protocolexplain != null and protocolexplain != ''">
+				and protocolExplain like concat(concat('%',
+				#{protocolexplain }), '%')
+			</if>
+			<if test="suppliercode != null and suppliercode != ''">
+				and supplierID=(SELECT supplierID from supplier where
+				supplierCode = #{suppliercode })
+			</if>
+			<if test="protocostatus != null and protocostatus != ''">
+				and protocoStatus = #{protocostatus }
+			</if>
+			<if test="suppliername != null and suppliername != ''">
+				and supplierID in (SELECT supplierID from supplier where
+				chineseName like concat(concat('%', #{suppliername }), '%'))
+			</if>
+			<if
+				test="starttime1 != null and starttime1 != '' and starttime2 != null and starttime2 != ''">
+				and startTime between #{starttime1 } and #{starttime2 }
+			</if>
+			<if
+				test="endtime1 != null and endtime1 != '' and endtime2 != null and endtime2 != ''">
+				and endTime between #{endtime1 } and #{endtime2 }
+			</if>
+		</where>
+	</select>
+
+	<sql id="Base_Column_List">
+		supplyAgreementID, protocolCode, supplierID, companyID,
+		protocolExplain, startTime,
+		endTime, protocoStatus, protocoEnclosure,
+		createDate,
+		lastProcessingTime, createPersonID,
+		lastPersonID
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="supplyAgreementMap"
+		parameterType="java.lang.Integer">
+		select s.*, u.loginName , us.loginName as logname from
+		supplyagreement s, user
+		u ,user us
+		where s.createPersonID = u.userID and
+		s.lastPersonID = us.userID and supplyAgreementID =
+		#{supplyagreementid,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		supplyagreement
+		where supplyAgreementID =
+		#{supplyagreementid,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.SupplyAgreement">
+		insert into supplyagreement
+		(supplyAgreementID, protocolCode,
+		supplierID, companyID,
+		protocolExplain,
+		startTime, endTime, protocoStatus,
+		protocoEnclosure,
+		createDate, lastProcessingTime,
+		createPersonID, lastPersonID)
+		values
+		(#{supplyagreementid,jdbcType=INTEGER},
+		#{protocolcode,jdbcType=VARCHAR},
+		#{supplierid,jdbcType=INTEGER},
+		#{companyid,jdbcType=INTEGER}, #{protocolexplain,jdbcType=VARCHAR},
+		#{starttime,jdbcType=TIMESTAMP}, #{endtime,jdbcType=TIMESTAMP},
+		#{protocostatus,jdbcType=VARCHAR},
+		#{protocoenclosure,jdbcType=VARCHAR},
+		#{createdate,jdbcType=TIMESTAMP},
+		#{lastprocessingtime,jdbcType=TIMESTAMP},
+		#{createpersonid,jdbcType=INTEGER}, #{lastpersonid,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.SupplyAgreement">
+		insert into supplyagreement
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="supplyagreementid != null">
+				supplyAgreementID,
+			</if>
+			<if test="protocolcode != null">
+				protocolCode,
+			</if>
+			<if test="supplierid != null">
+				supplierID,
+			</if>
+			<if test="companyid != null">
+				companyID,
+			</if>
+			<if test="protocolexplain != null">
+				protocolExplain,
+			</if>
+			<if test="starttime != null">
+				startTime,
+			</if>
+			<if test="endtime != null">
+				endTime,
+			</if>
+			<if test="protocostatus != null">
+				protocoStatus,
+			</if>
+			<if test="protocoenclosure != null">
+				protocoEnclosure,
+			</if>
+			<if test="createdate != null">
+				createDate,
+			</if>
+			<if test="lastprocessingtime != null">
+				lastProcessingTime,
+			</if>
+			<if test="createpersonid != null">
+				createPersonID,
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="supplyagreementid != null">
+				#{supplyagreementid,jdbcType=INTEGER},
+			</if>
+			<if test="protocolcode != null">
+				#{protocolcode,jdbcType=VARCHAR},
+			</if>
+			<if test="supplierid != null">
+				#{supplierid,jdbcType=INTEGER},
+			</if>
+			<if test="companyid != null">
+				#{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="protocolexplain != null">
+				#{protocolexplain,jdbcType=VARCHAR},
+			</if>
+			<if test="starttime != null">
+				#{starttime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				#{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="protocostatus != null">
+				#{protocostatus,jdbcType=VARCHAR},
+			</if>
+			<if test="protocoenclosure != null">
+				#{protocoenclosure,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				#{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastprocessingtime != null">
+				#{lastprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				#{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				#{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.SupplyAgreement">
+		update supplyagreement
+		<set>
+			<if test="protocolcode != null">
+				protocolCode = #{protocolcode,jdbcType=VARCHAR},
+			</if>
+			<if test="supplierid != null">
+				supplierID = #{supplierid,jdbcType=INTEGER},
+			</if>
+			<if test="companyid != null">
+				companyID = #{companyid,jdbcType=INTEGER},
+			</if>
+			<if test="protocolexplain != null">
+				protocolExplain = #{protocolexplain,jdbcType=VARCHAR},
+			</if>
+			<if test="starttime != null">
+				startTime = #{starttime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="endtime != null">
+				endTime = #{endtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="protocostatus != null">
+				protocoStatus = #{protocostatus,jdbcType=VARCHAR},
+			</if>
+			<if test="protocoenclosure != null">
+				protocoEnclosure = #{protocoenclosure,jdbcType=VARCHAR},
+			</if>
+			<if test="createdate != null">
+				createDate = #{createdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="lastprocessingtime != null">
+				lastProcessingTime =
+				#{lastprocessingtime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createpersonid != null">
+				createPersonID = #{createpersonid,jdbcType=INTEGER},
+			</if>
+			<if test="lastpersonid != null">
+				lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+			</if>
+		</set>
+		where supplyAgreementID = #{supplyagreementid,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.SupplyAgreement">
+		update
+		supplyagreement
+		set protocolCode = #{protocolcode,jdbcType=VARCHAR},
+		supplierID = #{supplierid,jdbcType=INTEGER},
+		companyID =
+		#{companyid,jdbcType=INTEGER},
+		protocolExplain =
+		#{protocolexplain,jdbcType=VARCHAR},
+		startTime =
+		#{starttime,jdbcType=TIMESTAMP},
+		endTime =
+		#{endtime,jdbcType=TIMESTAMP},
+		protocoStatus =
+		#{protocostatus,jdbcType=VARCHAR},
+		protocoEnclosure =
+		#{protocoenclosure,jdbcType=VARCHAR},
+		createDate =
+		#{createdate,jdbcType=TIMESTAMP},
+		lastProcessingTime =
+		#{lastprocessingtime,jdbcType=TIMESTAMP},
+		createPersonID =
+		#{createpersonid,jdbcType=INTEGER},
+		lastPersonID =
+		#{lastpersonid,jdbcType=INTEGER}
+		where supplyAgreementID =
+		#{supplyagreementid,jdbcType=INTEGER}
+	</update>
+</mapper>

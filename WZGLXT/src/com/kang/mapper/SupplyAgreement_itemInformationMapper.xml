@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.SupplyAgreement_itemInformationMapper">
+	<resultMap id="BaseResultMap" type="com.kang.pojo.SupplyAgreement_itemInformation">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="supplyAgreementID" property="supplyagreementid"
+			jdbcType="INTEGER" />
+		<result column="itemInformationID" property="iteminformationid"
+			jdbcType="INTEGER" />
+		<result column="purchasePrice" property="purchaseprice"
+			jdbcType="DECIMAL" />
+	</resultMap>
+	<resultMap id="s_iteminfoMap" type="com.kang.pojo.SupplyAgreement_itemInfo">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="supplyAgreementID" property="supplyagreementid"
+			jdbcType="INTEGER" />
+		<result column="itemInformationID" property="iteminformationid"
+			jdbcType="INTEGER" />
+		<result column="purchasePrice" property="purchaseprice"
+			jdbcType="DECIMAL" />
+		<result column="itemCode" property="itemcode" jdbcType="VARCHAR" />
+		<result column="articleBarCode" property="articlebarcode"
+			jdbcType="VARCHAR" />
+		<result column="chineseName" property="chinesename" jdbcType="VARCHAR" />
+		<result column="purchaseSpecifications" property="purchasespecifications"
+			jdbcType="VARCHAR" />
+		<result column="purchasingUnit" property="purchasingunit"
+			jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="s_iteminfo" resultMap="s_iteminfoMap" parameterType="java.lang.Integer">
+		SELECT s.id ,s.supplyAgreementID ,s.itemInformationID ,s.purchasePrice , i.itemcode , i.articleBarCode , i.chineseName ,
+		i.purchaseSpecifications , i.purchasingUnit from
+		supplyagreement_iteminformation s , inteminformation i WHERE
+		s.itemInformationID = i.intemInformationID and s.SupplyAgreementid =
+		#{supplyagreementid,jdbcType=INTEGER}
+	</select>
+	<sql id="Base_Column_List">
+		id, supplyAgreementID, itemInformationID, purchasePrice
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from supplyagreement_iteminformation
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		supplyagreement_iteminformation
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.kang.pojo.SupplyAgreement_itemInformation">
+		insert into
+		supplyagreement_iteminformation (id, supplyAgreementID,
+		itemInformationID,
+		purchasePrice)
+		values (#{id,jdbcType=INTEGER},
+		#{supplyagreementid,jdbcType=INTEGER},
+		#{iteminformationid,jdbcType=INTEGER},
+		#{purchaseprice,jdbcType=DECIMAL})
+	</insert>
+	<insert id="insertSelective" parameterType="com.kang.pojo.SupplyAgreement_itemInformation">
+		insert into supplyagreement_iteminformation
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="supplyagreementid != null">
+				supplyAgreementID,
+			</if>
+			<if test="iteminformationid != null">
+				itemInformationID,
+			</if>
+			<if test="purchaseprice != null">
+				purchasePrice,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="supplyagreementid != null">
+				#{supplyagreementid,jdbcType=INTEGER},
+			</if>
+			<if test="iteminformationid != null">
+				#{iteminformationid,jdbcType=INTEGER},
+			</if>
+			<if test="purchaseprice != null">
+				#{purchaseprice,jdbcType=DECIMAL},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.SupplyAgreement_itemInformation">
+		update supplyagreement_iteminformation
+		<set>
+			<if test="supplyagreementid != null">
+				supplyAgreementID =
+				#{supplyagreementid,jdbcType=INTEGER},
+			</if>
+			<if test="iteminformationid != null">
+				itemInformationID =
+				#{iteminformationid,jdbcType=INTEGER},
+			</if>
+			<if test="purchaseprice != null">
+				purchasePrice = #{purchaseprice,jdbcType=DECIMAL},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.kang.pojo.SupplyAgreement_itemInformation">
+		update
+		supplyagreement_iteminformation
+		set supplyAgreementID =
+		#{supplyagreementid,jdbcType=INTEGER},
+		itemInformationID =
+		#{iteminformationid,jdbcType=INTEGER},
+		purchasePrice =
+		#{purchaseprice,jdbcType=DECIMAL}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

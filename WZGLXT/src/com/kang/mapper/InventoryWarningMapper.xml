@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.InventoryWarningMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.InventoryWarning" >
+    <id column="inventoryWarningID" property="inventorywarningid" jdbcType="INTEGER" />
+    <result column="inventoryLocationID" property="inventorylocationid" jdbcType="INTEGER" />
+    <result column="itemInformationID" property="iteminformationid" jdbcType="INTEGER" />
+    <result column="warningType" property="warningtype" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="warningDate" property="warningdate" jdbcType="TIMESTAMP" />
+    <result column="personID" property="personid" jdbcType="INTEGER" />
+    <result column="processingTime" property="processingtime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    inventoryWarningID, inventoryLocationID, itemInformationID, warningType, status, 
+    warningDate, personID, processingTime
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from inventorywarning
+    where inventoryWarningID = #{inventorywarningid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from inventorywarning
+    where inventoryWarningID = #{inventorywarningid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.InventoryWarning" >
+    insert into inventorywarning (inventoryWarningID, inventoryLocationID, 
+      itemInformationID, warningType, status, 
+      warningDate, personID, processingTime
+      )
+    values (#{inventorywarningid,jdbcType=INTEGER}, #{inventorylocationid,jdbcType=INTEGER}, 
+      #{iteminformationid,jdbcType=INTEGER}, #{warningtype,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, 
+      #{warningdate,jdbcType=TIMESTAMP}, #{personid,jdbcType=INTEGER}, #{processingtime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.InventoryWarning" >
+    insert into inventorywarning
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="inventorywarningid != null" >
+        inventoryWarningID,
+      </if>
+      <if test="inventorylocationid != null" >
+        inventoryLocationID,
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID,
+      </if>
+      <if test="warningtype != null" >
+        warningType,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="warningdate != null" >
+        warningDate,
+      </if>
+      <if test="personid != null" >
+        personID,
+      </if>
+      <if test="processingtime != null" >
+        processingTime,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="inventorywarningid != null" >
+        #{inventorywarningid,jdbcType=INTEGER},
+      </if>
+      <if test="inventorylocationid != null" >
+        #{inventorylocationid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="warningtype != null" >
+        #{warningtype,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="warningdate != null" >
+        #{warningdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="personid != null" >
+        #{personid,jdbcType=INTEGER},
+      </if>
+      <if test="processingtime != null" >
+        #{processingtime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.InventoryWarning" >
+    update inventorywarning
+    <set >
+      <if test="inventorylocationid != null" >
+        inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER},
+      </if>
+      <if test="iteminformationid != null" >
+        itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      </if>
+      <if test="warningtype != null" >
+        warningType = #{warningtype,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="warningdate != null" >
+        warningDate = #{warningdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="personid != null" >
+        personID = #{personid,jdbcType=INTEGER},
+      </if>
+      <if test="processingtime != null" >
+        processingTime = #{processingtime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where inventoryWarningID = #{inventorywarningid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.InventoryWarning" >
+    update inventorywarning
+    set inventoryLocationID = #{inventorylocationid,jdbcType=INTEGER},
+      itemInformationID = #{iteminformationid,jdbcType=INTEGER},
+      warningType = #{warningtype,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      warningDate = #{warningdate,jdbcType=TIMESTAMP},
+      personID = #{personid,jdbcType=INTEGER},
+      processingTime = #{processingtime,jdbcType=TIMESTAMP}
+    where inventoryWarningID = #{inventorywarningid,jdbcType=INTEGER}
+  </update>
+</mapper>

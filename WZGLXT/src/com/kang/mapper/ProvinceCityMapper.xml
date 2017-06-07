@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ProvinceCityMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.ProvinceCity" >
+    <id column="provinceCityID" property="provincecityid" jdbcType="INTEGER" />
+    <result column="provinceCityName" property="provincecityname" jdbcType="VARCHAR" />
+    <result column="provinceCityThe" property="provincecitythe" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+   <select id="queryAreas" resultMap="BaseResultMap" >  
+        SELECT <include refid="Base_Column_List" /> FROM provincecity WHERE  provinceCityThe=#{pid}  
+    </select>  
+  <sql id="Base_Column_List" >
+    provinceCityID, provinceCityName, provinceCityThe, status, createDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from provincecity
+    where provinceCityID = #{provincecityid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from provincecity
+    where provinceCityID = #{provincecityid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.ProvinceCity" >
+    insert into provincecity (provinceCityID, provinceCityName, 
+      provinceCityThe, status, createDate
+      )
+    values (#{provincecityid,jdbcType=INTEGER}, #{provincecityname,jdbcType=VARCHAR}, 
+      #{provincecitythe,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, #{createdate,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.ProvinceCity" >
+    insert into provincecity
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="provincecityid != null" >
+        provinceCityID,
+      </if>
+      <if test="provincecityname != null" >
+        provinceCityName,
+      </if>
+      <if test="provincecitythe != null" >
+        provinceCityThe,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createdate != null" >
+        createDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="provincecityid != null" >
+        #{provincecityid,jdbcType=INTEGER},
+      </if>
+      <if test="provincecityname != null" >
+        #{provincecityname,jdbcType=VARCHAR},
+      </if>
+      <if test="provincecitythe != null" >
+        #{provincecitythe,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.ProvinceCity" >
+    update provincecity
+    <set >
+      <if test="provincecityname != null" >
+        provinceCityName = #{provincecityname,jdbcType=VARCHAR},
+      </if>
+      <if test="provincecitythe != null" >
+        provinceCityThe = #{provincecitythe,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where provinceCityID = #{provincecityid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.ProvinceCity" >
+    update provincecity
+    set provinceCityName = #{provincecityname,jdbcType=VARCHAR},
+      provinceCityThe = #{provincecitythe,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      createDate = #{createdate,jdbcType=TIMESTAMP}
+    where provinceCityID = #{provincecityid,jdbcType=INTEGER}
+  </update>
+</mapper>

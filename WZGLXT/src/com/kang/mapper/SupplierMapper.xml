@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.SupplierMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.Supplier" >
+    <id column="supplierID" property="supplierid" jdbcType="INTEGER" />
+    <result column="supplierCode" property="suppliercode" jdbcType="VARCHAR" />
+    <result column="supplierAbbreviation" property="supplierabbreviation" jdbcType="VARCHAR" />
+    <result column="chineseName" property="chinesename" jdbcType="VARCHAR" />
+    <result column="englishName" property="englishname" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="companyTelephone" property="companytelephone" jdbcType="VARCHAR" />
+    <result column="fax" property="fax" jdbcType="VARCHAR" />
+    <result column="contacts" property="contacts" jdbcType="VARCHAR" />
+    <result column="contactsTelephone" property="contactstelephone" jdbcType="VARCHAR" />
+    <result column="postalCode" property="postalcode" jdbcType="VARCHAR" />
+    <result column="bankAccount" property="bankaccount" jdbcType="VARCHAR" />
+    <result column="bankCode" property="bankcode" jdbcType="VARCHAR" />
+    <result column="accountHolder" property="accountholder" jdbcType="VARCHAR" />
+    <result column="loginAccount" property="loginaccount" jdbcType="VARCHAR" />
+    <result column="loginPassword" property="loginpassword" jdbcType="VARCHAR" />
+    <result column="businessLicense" property="businesslicense" jdbcType="VARCHAR" />
+    <result column="organizationCodeCertificate" property="organizationcodecertificate" jdbcType="VARCHAR" />
+    <result column="legalRepresentative" property="legalrepresentative" jdbcType="VARCHAR" />
+    <result column="taxRegistrationNumber" property="taxregistrationnumber" jdbcType="VARCHAR" />
+    <result column="nationalityID" property="nationalityid" jdbcType="INTEGER" />
+    <result column="provinceID" property="provinceid" jdbcType="INTEGER" />
+    <result column="cityID" property="cityid" jdbcType="INTEGER" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="finalProcessingTime" property="finalprocessingtime" jdbcType="TIMESTAMP" />
+    <result column="createPersonID" property="createpersonid" jdbcType="INTEGER" />
+    <result column="lastPersonID" property="lastpersonid" jdbcType="INTEGER" />
+    <result column="loginName" property="createpersonname" jdbcType="VARCHAR" />
+	<result column="logname" property="lastpersonname" jdbcType="VARCHAR" />
+  </resultMap>
+  <select id="findPagingList" resultMap="BaseResultMap"
+		parameterType="map">
+		select s.* , u.loginName , us.loginName as logname from supplier s, user
+		u ,user us
+		<where>
+			and s.createPersonID = u.userID and s.lastPersonID = us.userID
+			<if test="suppliercode != null and suppliercode != ''">
+				and suppliercode = #{suppliercode }
+			</if>
+			<if test="suppliername != null and suppliername != ''">
+				and chineseName like concat(concat('%', #{suppliername }), '%')
+			</if>
+			<if test="supplierstatus != null and supplierstatus != ''">
+				and s.status = #{supplierstatus }
+			</if>
+		</where>
+		limit #{currpage } , #{pagecount}
+		<!-- order by createTime -->
+	</select>
+	<select id="selrow" resultType="java.lang.Integer"
+		parameterType="map">
+		select count(*) from supplier
+		<where>
+			<if test="suppliercode != null and suppliercode != ''">
+				and suppliercode = #{suppliercode }
+			</if>
+			<if test="suppliername != null and suppliername != ''">
+				and chineseName like concat(concat('%', #{suppliername }), '%')
+			</if>
+			<if test="supplierstatus != null and supplierstatus != ''">
+				and status = #{supplierstatus }
+			</if>
+		</where>
+	</select>
+  <sql id="Base_Column_List" >
+    supplierID, supplierCode, supplierAbbreviation, chineseName, englishName, status, 
+    email, companyTelephone, fax, contacts, contactsTelephone, postalCode, bankAccount, 
+    bankCode, accountHolder, loginAccount, loginPassword, businessLicense, organizationCodeCertificate, 
+    legalRepresentative, taxRegistrationNumber, nationalityID, provinceID, cityID, address, 
+    description, createTime, finalProcessingTime, createPersonID, lastPersonID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from supplier
+    where supplierID = #{supplierid,jdbcType=INTEGER}
+  </select>
+  <!-- 查询供应商代码和名称 -->
+  <select id="selectSupplier" resultMap="BaseResultMap">
+  	select supplierid,chinesename,suppliercode
+    from supplier
+  </select>   
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from supplier
+    where supplierID = #{supplierid,jdbcType=INTEGER}
+  </delete>
+  <!-- 查询供应商代码和名称 -->
+  <select id="selectSup" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    	contacts,contactsTelephone,supplierCode,supplierID 
+    		from supplier
+    			where chineseName=#{supplierName,jdbcType=VARCHAR}
+  </select>
+  <insert id="insert" parameterType="com.kang.pojo.Supplier" >
+    insert into supplier (supplierID, supplierCode, supplierAbbreviation, 
+      chineseName, englishName, status, 
+      email, companyTelephone, fax, 
+      contacts, contactsTelephone, postalCode, 
+      bankAccount, bankCode, accountHolder, 
+      loginAccount, loginPassword, businessLicense, 
+      organizationCodeCertificate, legalRepresentative, 
+      taxRegistrationNumber, nationalityID, provinceID, 
+      cityID, address, description, 
+      createTime, finalProcessingTime, createPersonID, 
+      lastPersonID)
+    values (#{supplierid,jdbcType=INTEGER}, #{suppliercode,jdbcType=VARCHAR}, #{supplierabbreviation,jdbcType=VARCHAR}, 
+      #{chinesename,jdbcType=VARCHAR}, #{englishname,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{companytelephone,jdbcType=VARCHAR}, #{fax,jdbcType=VARCHAR}, 
+      #{contacts,jdbcType=VARCHAR}, #{contactstelephone,jdbcType=VARCHAR}, #{postalcode,jdbcType=VARCHAR}, 
+      #{bankaccount,jdbcType=VARCHAR}, #{bankcode,jdbcType=VARCHAR}, #{accountholder,jdbcType=VARCHAR}, 
+      #{loginaccount,jdbcType=VARCHAR}, #{loginpassword,jdbcType=VARCHAR}, #{businesslicense,jdbcType=VARCHAR}, 
+      #{organizationcodecertificate,jdbcType=VARCHAR}, #{legalrepresentative,jdbcType=VARCHAR}, 
+      #{taxregistrationnumber,jdbcType=VARCHAR}, #{nationalityid,jdbcType=INTEGER}, #{provinceid,jdbcType=INTEGER}, 
+      #{cityid,jdbcType=INTEGER}, #{address,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{createtime,jdbcType=TIMESTAMP}, #{finalprocessingtime,jdbcType=TIMESTAMP}, #{createpersonid,jdbcType=INTEGER}, 
+      #{lastpersonid,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.Supplier" >
+    insert into supplier
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="supplierid != null" >
+        supplierID,
+      </if>
+      <if test="suppliercode != null" >
+        supplierCode,
+      </if>
+      <if test="supplierabbreviation != null" >
+        supplierAbbreviation,
+      </if>
+      <if test="chinesename != null" >
+        chineseName,
+      </if>
+      <if test="englishname != null" >
+        englishName,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="companytelephone != null" >
+        companyTelephone,
+      </if>
+      <if test="fax != null" >
+        fax,
+      </if>
+      <if test="contacts != null" >
+        contacts,
+      </if>
+      <if test="contactstelephone != null" >
+        contactsTelephone,
+      </if>
+      <if test="postalcode != null" >
+        postalCode,
+      </if>
+      <if test="bankaccount != null" >
+        bankAccount,
+      </if>
+      <if test="bankcode != null" >
+        bankCode,
+      </if>
+      <if test="accountholder != null" >
+        accountHolder,
+      </if>
+      <if test="loginaccount != null" >
+        loginAccount,
+      </if>
+      <if test="loginpassword != null" >
+        loginPassword,
+      </if>
+      <if test="businesslicense != null" >
+        businessLicense,
+      </if>
+      <if test="organizationcodecertificate != null" >
+        organizationCodeCertificate,
+      </if>
+      <if test="legalrepresentative != null" >
+        legalRepresentative,
+      </if>
+      <if test="taxregistrationnumber != null" >
+        taxRegistrationNumber,
+      </if>
+      <if test="nationalityid != null" >
+        nationalityID,
+      </if>
+      <if test="provinceid != null" >
+        provinceID,
+      </if>
+      <if test="cityid != null" >
+        cityID,
+      </if>
+      <if test="address != null" >
+        address,
+      </if>
+      <if test="description != null" >
+        description,
+      </if>
+      <if test="createtime != null" >
+        createTime,
+      </if>
+      <if test="finalprocessingtime != null" >
+        finalProcessingTime,
+      </if>
+      <if test="createpersonid != null" >
+        createPersonID,
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="supplierid != null" >
+        #{supplierid,jdbcType=INTEGER},
+      </if>
+      <if test="suppliercode != null" >
+        #{suppliercode,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierabbreviation != null" >
+        #{supplierabbreviation,jdbcType=VARCHAR},
+      </if>
+      <if test="chinesename != null" >
+        #{chinesename,jdbcType=VARCHAR},
+      </if>
+      <if test="englishname != null" >
+        #{englishname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="companytelephone != null" >
+        #{companytelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="fax != null" >
+        #{fax,jdbcType=VARCHAR},
+      </if>
+      <if test="contacts != null" >
+        #{contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="contactstelephone != null" >
+        #{contactstelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="postalcode != null" >
+        #{postalcode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankaccount != null" >
+        #{bankaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="bankcode != null" >
+        #{bankcode,jdbcType=VARCHAR},
+      </if>
+      <if test="accountholder != null" >
+        #{accountholder,jdbcType=VARCHAR},
+      </if>
+      <if test="loginaccount != null" >
+        #{loginaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="loginpassword != null" >
+        #{loginpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="businesslicense != null" >
+        #{businesslicense,jdbcType=VARCHAR},
+      </if>
+      <if test="organizationcodecertificate != null" >
+        #{organizationcodecertificate,jdbcType=VARCHAR},
+      </if>
+      <if test="legalrepresentative != null" >
+        #{legalrepresentative,jdbcType=VARCHAR},
+      </if>
+      <if test="taxregistrationnumber != null" >
+        #{taxregistrationnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="nationalityid != null" >
+        #{nationalityid,jdbcType=INTEGER},
+      </if>
+      <if test="provinceid != null" >
+        #{provinceid,jdbcType=INTEGER},
+      </if>
+      <if test="cityid != null" >
+        #{cityid,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finalprocessingtime != null" >
+        #{finalprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createpersonid != null" >
+        #{createpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastpersonid != null" >
+        #{lastpersonid,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.Supplier" >
+    update supplier
+    <set >
+      <if test="suppliercode != null" >
+        supplierCode = #{suppliercode,jdbcType=VARCHAR},
+      </if>
+      <if test="supplierabbreviation != null" >
+        supplierAbbreviation = #{supplierabbreviation,jdbcType=VARCHAR},
+      </if>
+      <if test="chinesename != null" >
+        chineseName = #{chinesename,jdbcType=VARCHAR},
+      </if>
+      <if test="englishname != null" >
+        englishName = #{englishname,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="companytelephone != null" >
+        companyTelephone = #{companytelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="fax != null" >
+        fax = #{fax,jdbcType=VARCHAR},
+      </if>
+      <if test="contacts != null" >
+        contacts = #{contacts,jdbcType=VARCHAR},
+      </if>
+      <if test="contactstelephone != null" >
+        contactsTelephone = #{contactstelephone,jdbcType=VARCHAR},
+      </if>
+      <if test="postalcode != null" >
+        postalCode = #{postalcode,jdbcType=VARCHAR},
+      </if>
+      <if test="bankaccount != null" >
+        bankAccount = #{bankaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="bankcode != null" >
+        bankCode = #{bankcode,jdbcType=VARCHAR},
+      </if>
+      <if test="accountholder != null" >
+        accountHolder = #{accountholder,jdbcType=VARCHAR},
+      </if>
+      <if test="loginaccount != null" >
+        loginAccount = #{loginaccount,jdbcType=VARCHAR},
+      </if>
+      <if test="loginpassword != null" >
+        loginPassword = #{loginpassword,jdbcType=VARCHAR},
+      </if>
+      <if test="businesslicense != null" >
+        businessLicense = #{businesslicense,jdbcType=VARCHAR},
+      </if>
+      <if test="organizationcodecertificate != null" >
+        organizationCodeCertificate = #{organizationcodecertificate,jdbcType=VARCHAR},
+      </if>
+      <if test="legalrepresentative != null" >
+        legalRepresentative = #{legalrepresentative,jdbcType=VARCHAR},
+      </if>
+      <if test="taxregistrationnumber != null" >
+        taxRegistrationNumber = #{taxregistrationnumber,jdbcType=VARCHAR},
+      </if>
+      <if test="nationalityid != null" >
+        nationalityID = #{nationalityid,jdbcType=INTEGER},
+      </if>
+      <if test="provinceid != null" >
+        provinceID = #{provinceid,jdbcType=INTEGER},
+      </if>
+      <if test="cityid != null" >
+        cityID = #{cityid,jdbcType=INTEGER},
+      </if>
+      <if test="address != null" >
+        address = #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createTime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="finalprocessingtime != null" >
+        finalProcessingTime = #{finalprocessingtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createpersonid != null" >
+        createPersonID = #{createpersonid,jdbcType=INTEGER},
+      </if>
+      <if test="lastpersonid != null" >
+        lastPersonID = #{lastpersonid,jdbcType=INTEGER},
+      </if>
+    </set>
+    where supplierID = #{supplierid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.Supplier" >
+    update supplier
+    set supplierCode = #{suppliercode,jdbcType=VARCHAR},
+      supplierAbbreviation = #{supplierabbreviation,jdbcType=VARCHAR},
+      chineseName = #{chinesename,jdbcType=VARCHAR},
+      englishName = #{englishname,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      companyTelephone = #{companytelephone,jdbcType=VARCHAR},
+      fax = #{fax,jdbcType=VARCHAR},
+      contacts = #{contacts,jdbcType=VARCHAR},
+      contactsTelephone = #{contactstelephone,jdbcType=VARCHAR},
+      postalCode = #{postalcode,jdbcType=VARCHAR},
+      bankAccount = #{bankaccount,jdbcType=VARCHAR},
+      bankCode = #{bankcode,jdbcType=VARCHAR},
+      accountHolder = #{accountholder,jdbcType=VARCHAR},
+      loginAccount = #{loginaccount,jdbcType=VARCHAR},
+      loginPassword = #{loginpassword,jdbcType=VARCHAR},
+      businessLicense = #{businesslicense,jdbcType=VARCHAR},
+      organizationCodeCertificate = #{organizationcodecertificate,jdbcType=VARCHAR},
+      legalRepresentative = #{legalrepresentative,jdbcType=VARCHAR},
+      taxRegistrationNumber = #{taxregistrationnumber,jdbcType=VARCHAR},
+      nationalityID = #{nationalityid,jdbcType=INTEGER},
+      provinceID = #{provinceid,jdbcType=INTEGER},
+      cityID = #{cityid,jdbcType=INTEGER},
+      address = #{address,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      createTime = #{createtime,jdbcType=TIMESTAMP},
+      finalProcessingTime = #{finalprocessingtime,jdbcType=TIMESTAMP},
+      createPersonID = #{createpersonid,jdbcType=INTEGER},
+      lastPersonID = #{lastpersonid,jdbcType=INTEGER}
+    where supplierID = #{supplierid,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kang.dao.ModuleNameMapper" >
+  <resultMap id="BaseResultMap" type="com.kang.pojo.ModuleName" >
+    <id column="moduleNameID" property="modulenameid" jdbcType="INTEGER" />
+    <result column="moduleName" property="modulename" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="createDate" property="createdate" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    moduleNameID, moduleName, status, createDate
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from modulename
+    where moduleNameID = #{modulenameid,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from modulename
+    where moduleNameID = #{modulenameid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.kang.pojo.ModuleName" >
+    insert into modulename (moduleNameID, moduleName, status, 
+      createDate)
+    values (#{modulenameid,jdbcType=INTEGER}, #{modulename,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      #{createdate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kang.pojo.ModuleName" >
+    insert into modulename
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="modulenameid != null" >
+        moduleNameID,
+      </if>
+      <if test="modulename != null" >
+        moduleName,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createdate != null" >
+        createDate,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="modulenameid != null" >
+        #{modulenameid,jdbcType=INTEGER},
+      </if>
+      <if test="modulename != null" >
+        #{modulename,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kang.pojo.ModuleName" >
+    update modulename
+    <set >
+      <if test="modulename != null" >
+        moduleName = #{modulename,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="createdate != null" >
+        createDate = #{createdate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where moduleNameID = #{modulenameid,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kang.pojo.ModuleName" >
+    update modulename
+    set moduleName = #{modulename,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR},
+      createDate = #{createdate,jdbcType=TIMESTAMP}
+    where moduleNameID = #{modulenameid,jdbcType=INTEGER}
+  </update>
+</mapper>
